@@ -1,0 +1,4 @@
+# Jangan commit data pasien
+*.json
+*.ics
+.DS_Store

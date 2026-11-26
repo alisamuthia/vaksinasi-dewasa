@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaksinasi Dewasa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: sticky header + horizontal tab rail; cards in one column on phone, two on wide screens */
+  --bg:#f2f4f6; --surface:#ffffff; --ink:#16202a; --muted:#5a6774; --line:#dbe1e8;
+  --accent:#2c4bcc; --accent-ink:#ffffff; --accent-soft:#e7ebfa;
+  --danger:#c22d3a; --danger-soft:#fbe8ea; --warn:#9a5b00; --warn-soft:#fcf0d9;
+  --ok:#1d7448; --ok-soft:#e1f2e8; --info:#46586b; --info-soft:#e9eef3;
+  --font-display:'IBM Plex Sans Condensed','Arial Narrow',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141a; --surface:#18202a; --ink:#e6ebf0; --muted:#9aa8b6; --line:#2a3542;
+    --accent:#8ea3ff; --accent-ink:#0f141a; --accent-soft:#222c4a;
+    --danger:#ff8a93; --danger-soft:#3a1f24; --warn:#f2bf62; --warn-soft:#382d17;
+    --ok:#6fd49c; --ok-soft:#173226; --info:#a9b8c8; --info-soft:#222c37;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --surface:#18202a; --ink:#e6ebf0; --muted:#9aa8b6; --line:#2a3542;
+  --accent:#8ea3ff; --accent-ink:#0f141a; --accent-soft:#222c4a;
+  --danger:#ff8a93; --danger-soft:#3a1f24; --warn:#f2bf62; --warn-soft:#382d17;
+  --ok:#6fd49c; --ok-soft:#173226; --info:#a9b8c8; --info-soft:#222c37;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.2}
+h2{font-size:21px} h3{font-size:17px}
+p{margin:0}
+a{color:var(--accent)}
+.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 16px;max-width:1180px;margin:0 auto;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{font-size:20px;letter-spacing:.2px}
+.brand small{display:block;color:var(--muted);font-size:12px}
+.vial{width:26px;height:26px;flex:none}
+.store{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;padding:0 12px;max-width:1180px;margin:0 auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:none;border:0;background:none;color:var(--muted);font:600 14px var(--font-body);padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs .cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--danger);color:#fff;font:600 11px/18px var(--font-mono);text-align:center}
+main{max-width:1180px;margin:0 auto;padding:16px}
+section.view{display:none;flex-direction:column;gap:16px}
+section.view.on{display:flex}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.grow{flex:1 1 auto}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.tiny{font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--info-soft);color:var(--info)}
+.pill.danger{background:var(--danger-soft);color:var(--danger)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.accent{background:var(--accent-soft);color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--font-body);padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{border-color:transparent;background:none;color:var(--accent);padding:6px 8px}
+.btn.danger{color:var(--danger)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted);flex:1 1 160px}
+input,select,textarea{font:15px var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:70px;resize:vertical}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 12px}
+.checks label{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer}
+.checks input{width:auto;margin-top:3px}
+.list{display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:4px 1fr auto;gap:12px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.item:first-child{border-top:0}
+.stripe{align-self:stretch;border-radius:2px;background:var(--line)}
+.stripe.danger{background:var(--danger)} .stripe.warn{background:var(--warn)} .stripe.accent{background:var(--accent)} .stripe.ok{background:var(--ok)} .stripe.info{background:var(--info)}
+.item .t{font-weight:600}
+.item .meta{font-size:13px;color:var(--muted)}
+.item .acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.tile b{display:block;font:600 26px var(--font-mono)}
+.tile span{font-size:13px;color:var(--muted)}
+.tile.danger b{color:var(--danger)} .tile.warn b{color:var(--warn)} .tile.accent b{color:var(--accent)} .tile.ok b{color:var(--ok)}
+details.vx{border-top:1px solid var(--line);padding:10px 0}
+details.vx:first-of-type{border-top:0}
+details.vx summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+details.vx summary::-webkit-details-marker{display:none}
+details.vx summary::before{content:"▸";color:var(--muted);transition:transform .15s}
+details.vx[open] summary::before{transform:rotate(90deg)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:14px;margin-top:10px}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0}
+.kv ul{margin:0;padding-left:18px}
+@media (max-width:560px){.kv{grid-template-columns:1fr}.kv dt{margin-top:6px}}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.banner{border-radius:10px;padding:10px 14px;font-size:14px;background:var(--accent-soft);color:var(--ink);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.warn{background:var(--warn-soft)} .banner.danger{background:var(--danger-soft)} .banner.ok{background:var(--ok-soft)}
+.result{border-left:4px solid var(--accent);padding:10px 14px;background:var(--bg);border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:6px}
+.result.danger{border-left-color:var(--danger)} .result.ok{border-left-color:var(--ok)} .result.warn{border-left-color:var(--warn)}
+.result ul,.result ol{margin:0;padding-left:20px}
+.modal-bg{position:fixed;inset:0;background:rgba(10,14,20,.55);display:none;align-items:flex-start;justify-content:center;z-index:50;overflow-y:auto;padding:24px 12px}
+.modal-bg.on{display:flex}
+.modal{background:var(--surface);border-radius:12px;max-width:640px;width:100%;padding:18px;display:flex;flex-direction:column;gap:12px;border:1px solid var(--line)}
+.modal header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:none;padding:6px 10px;font:600 13px var(--font-body);color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.hist td:first-child{white-space:nowrap}
+footer{max-width:1180px;margin:0 auto;padding:8px 16px 40px;font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div class="brand">
+      <svg class="vial" viewBox="0 0 32 32" aria-hidden="true"><rect x="10" y="3" width="12" height="5" rx="1.5" fill="var(--accent)"/><path d="M11 8h10v17a5 5 0 0 1-10 0z" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M12 17h8v8a4 4 0 0 1-8 0z" fill="var(--accent)" opacity=".35"/></svg>
+      <div><h1>Vaksinasi Dewasa</h1><small>Jadwal · Pengingat · Catch-up · KIPI</small></div>
+    </div>
+    <div class="store" id="store"><span class="dot" id="storeDot"></span><span id="storeTxt">Memuat…</span></div>
+  </div>
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="pengingat" aria-selected="true">Pengingat<span class="cnt" id="cntDue" hidden></span></button>
+    <button role="tab" data-tab="pasien" aria-selected="false">Pasien</button>
+    <button role="tab" data-tab="catchup" aria-selected="false">Catch-up &amp; Perjalanan</button>
+    <button role="tab" data-tab="khusus" aria-selected="false">Kondisi Khusus</button>
+    <button role="tab" data-tab="katalog" aria-selected="false">Katalog Vaksin</button>
+    <button role="tab" data-tab="kipi" aria-selected="false">KIPI</button>
+    <button role="tab" data-tab="update" aria-selected="false">Update</button>
+  </nav>
+</header>
+
+<main>
+  <section class="view on" id="v-pengingat"></section>
+  <section class="view" id="v-pasien"></section>
+  <section class="view" id="v-catchup"></section>
+  <section class="view" id="v-khusus"></section>
+  <section class="view" id="v-katalog"></section>
+  <section class="view" id="v-kipi"></section>
+  <section class="view" id="v-update"></section>
+</main>
+<footer>Alat bantu keputusan klinis. Rujukan: Jadwal Imunisasi Dewasa Satgas Imunisasi Dewasa PAPDI 2025, ACIP/CDC Adult Schedule 2025, WHO position papers, regulasi kesehatan Umrah/Haji KSA 1447H, Permenkes 12/2017 &amp; pedoman KIPI Kemenkes, EULAR 2019 (AIIRD), ACR 2022 (RMD), IDSA 2013 (host imunokompromais). Selalu cocokkan dengan label produk dan regulasi terbaru. · Versi offline 1.4 (20 Nov 2026) — data tersimpan di browser ini saja; jangan bersihkan data situs/cache tanpa ekspor JSON.</footer>
+
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============ Utilities ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+function sod(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
+const TODAY=sod(new Date());
+function parseD(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function addYears(d,n){const x=new Date(d);x.setFullYear(x.getFullYear()+n);return x}
+function addMonths(d,n){const x=new Date(d);x.setMonth(x.getMonth()+n);return x}
+function maxD(a,b){return a>b?a:b}
+function diffDays(a,b){return Math.round((sod(a)-sod(b))/864e5)}
+function fmt(d){if(!d)return '—';return d.getDate()+' '+BLN[d.getMonth()]+' '+d.getFullYear()}
+function rel(d){const n=diffDays(d,TODAY);if(n===0)return 'hari ini';if(n>0)return n<=60?`${n} hari lagi`:`${Math.round(n/30)} bln lagi`;const m=-n;return m<=60?`${m} hari lalu`:`${Math.round(m/30)} bln lalu`}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function ageOf(p,at){const b=parseD(p.dob);if(!b)return null;const t=at||TODAY;let a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;return a}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600)}
+
+/* ============ Vaccine catalogue ============ */
+const fl=p=>{const f=p.flags||{};if(p.isx&&p.isx.status==='aktif'&&typeof isxInfo==='function'){const X=isxInfo(p);if(X&&X.any)return {...f,isxHigh:X.high,isxAny:true}}return f};
+const komorbid=f=>f.dm||f.ckd||f.dialisis||f.jantung||f.paru||f.hati||f.perokok||f.alkohol;
+const imuno=f=>f.imunokompromais||f.cd4lt200||f.asplenia||f.hiv||f.isxHigh;
+const S_LIVE_KI='Vaksin hidup';
+
+const VAX=[
+{id:'flu',nama:'Influenza',kat:'Rutin',live:false,jenis:'Inaktif (split/subunit/kultur sel); TIV (trivalen, rekomendasi WHO terkini) atau QIV',
+ produk:['Vaxigrip (TIV) — trivalen split, Sanofi','Flubio (TIV) — trivalen, Bio Farma','Vaxigrip Tetra (QIV) — Sanofi','Fluarix Tetra (QIV) — GSK','SKYCellflu Quadrivalent (QIV, kultur sel) — Dexa Medica','Lainnya'],rute:'IM deltoid, 0,5 mL',
+ jadwal:'1 dosis setiap tahun. Formula Belahan Bumi Selatan (SH) atau Utara (NH) — gunakan formula terbaru yang tersedia; jemaah haji/umrah idealnya formula musim tujuan.',
+ seri:()=>({n:1,iv:[]}),booster:()=>({years:1,label:'Dosis tahunan'}),
+ ind:p=>{const f=fl(p),a=ageOf(p);return {level:'rek',why:a>=60||komorbid(f)||f.hamil||f.nakes?'Prioritas (lansia/komorbid/hamil/nakes) — tiap tahun':'Semua dewasa — tiap tahun'}},
+ pengganti:'Semua vaksin influenza inaktif yang sesuai usia dapat saling menggantikan (TIV ↔ QIV, antarmerek); tidak perlu produk yang sama tiap tahun. Sejak 2024 WHO merekomendasikan trivalen (B/Yamagata dihapus) — TIV setara proteksinya.',
+ ki:['Anafilaksis terhadap dosis sebelumnya atau komponen (selain telur)'],
+ perhatian:['GBS ≤6 minggu setelah vaksin influenza sebelumnya','Sakit akut sedang–berat (tunda)','Alergi telur BUKAN kontraindikasi (termasuk riwayat anafilaksis telur: berikan di fasilitas dengan kesiapan anafilaksis)'],
+ es:['Nyeri/bengkak lokal 10–64%','Demam ringan, mialgia, malaise 1–2 hari','Jarang: anafilaksis (~1,3/juta), GBS (~1–2/juta)'],
+ tl:['Kompres dingin, parasetamol 500–1000 mg bila perlu','Gejala sistemik sembuh sendiri ≤48 jam'],
+ acc:()=>({s:[0]}),lead:14},
+{id:'td',nama:'Tetanus–difteri / Tdap',kat:'Rutin',live:false,jenis:'Toksoid (Td) ± pertusis aselular (Tdap)',
+ produk:['Boostrix (Tdap) — GSK','Adacel (Tdap) — Sanofi','Td Bio Farma (Td)','TT Bio Farma (toksoid tetanus)','Lainnya'],rute:'IM deltoid, 0,5 mL',
+ jadwal:'Primer lengkap di masa anak → booster Td/Tdap tiap 10 tahun (1× Tdap saat dewasa). Belum pernah/tidak jelas: 3 dosis 0, 4 mgg, 6–12 bln (salah satunya Tdap). Hamil: Tdap tiap kehamilan, UK 27–36 mgg. Luka kotor: booster bila dosis terakhir >5 tahun.',
+ skema:[{k:'booster',t:'Booster (primer lengkap)'},{k:'primer',t:'Primer dewasa 3 dosis'}],
+ seri:(p,d)=>d[0].skema==='primer'?{n:3,nama:'primer',iv:[{min:28,rec:28},{min:180,rec:180}]}:{n:1,iv:[]},
+ booster:p=>({years:10,label:'Booster 10 tahun'}),
+ ind:p=>({level:'rek',why:fl(p).hamil?'Hamil: Tdap UK 27–36 mgg':'Booster tiap 10 tahun; 1× Tdap dewasa'}),
+ custom:null,
+ pengganti:'Boostrix ↔ Adacel dapat saling menggantikan. Bila Tdap tidak tersedia untuk booster rutin → Td. Pada kehamilan Tdap tidak dapat diganti Td untuk tujuan proteksi pertusis bayi — usahakan dalam jendela 27–36 mgg.',
+ ki:['Anafilaksis terhadap dosis sebelumnya','Tdap: ensefalopati ≤7 hari setelah vaksin pertusis tanpa sebab lain (gunakan Td)'],
+ perhatian:['GBS ≤6 mgg setelah vaksin tetanus','Riwayat reaksi Arthus → tunda ≥10 tahun dari dosis tetanus terakhir','Kelainan neurologis progresif/tidak stabil (Tdap)'],
+ es:['Nyeri lokal (hingga 2/3)','Bengkak luas seluruh lengan (jarang, lebih sering pada booster berulang)','Demam ringan, lelah'],
+ tl:['Kompres dingin, analgetik','Bengkak luas: simptomatik, bukan kontraindikasi dosis berikutnya kecuali Arthus'],
+ acc:(p)=>({s:[0]}),lead:0},
+{id:'hpv',nama:'HPV',kat:'Rutin',live:false,jenis:'VLP rekombinan (2v/4v/9v)',
+ produk:['Gardasil 9 (9v) — MSD','Gardasil (4v) — MSD','NusaGard (4v) — Bio Farma','Cervarix (2v) — GSK','Lainnya'],rute:'IM deltoid, 0,5 mL',
+ jadwal:'Usia 9–26 th rutin; 27–45 th berdasarkan diskusi. Mulai ≥15 th atau imunokompromais: 3 dosis 0, 1–2, 6 bln (min: 4 mgg D1–D2, 12 mgg D2–D3, 5 bln D1–D3). Mulai <15 th imunokompeten: 2 dosis 0, 6–12 bln.',
+ seri:(p,d)=>{const a1=ageOf(p,d[0].d),f=fl(p);if(a1!==null&&a1<15&&!imuno(f))return {n:2,iv:[{min:150,rec:180}]};return {n:3,iv:[{min:28,rec:60},{min:84,rec:120,fromFirst:150}]}},
+ booster:()=>null,
+ ind:p=>{const a=ageOf(p);if(a<=26)return {level:'rek',why:'Usia ≤26 tahun'};if(a<=45)return {level:'pert',why:'Usia 27–45 tahun: diskusi manfaat (shared decision)'};return null},
+ pengganti:'Gardasil 9 dapat melengkapi seri yang dimulai dengan 4v (Gardasil/NusaGard) atau 2v (tanpa mengulang). Gardasil ↔ NusaGard (4v, transfer teknologi MSD) setara. NusaGard: label BPOM perempuan 9–45 th, laki-laki 9–26 th. Seri tidak perlu diulang bila jeda panjang.',
+ ki:['Anafilaksis terhadap komponen (ragi untuk 4v/9v)'],perhatian:['Kehamilan: tunda sampai pascapersalinan (tidak perlu terminasi bila terlanjur)'],
+ es:['Nyeri lokal','Sinkop pada remaja/dewasa muda — observasi 15 menit duduk/berbaring','Sakit kepala, demam ringan'],
+ tl:['Posisikan berbaring bila presinkop','Analgetik simptomatik'],
+ acc:()=>({s:[0,60,180]}),lead:0},
+{id:'hepb',nama:'Hepatitis B',kat:'Rutin / risiko',live:false,jenis:'Rekombinan HBsAg',
+ produk:['Engerix-B 20 µg — GSK','Euvax B — Sanofi/LG Chem','Hepatitis B Rekombinan — Bio Farma','Lainnya'],rute:'IM deltoid. Dewasa 20 µg (1 mL); dialisis/imunokompromais 40 µg',
+ jadwal:'Standar 0, 1, 6 bln (min: 4 mgg D1–D2, 8 mgg D2–D3, 16 mgg D1–D3). Akselerasi (Engerix-B) 0, 7, 21 hari + 12 bln. Dialisis: 40 µg 0, 1, 2, 6 bln. Periksa anti-HBs 1–2 bln pasca seri pada nakes, dialisis, HIV, imunokompromais; <10 mIU/mL → ulang 1 seri.',
+ skema:[{k:'standar',t:'Standar 0-1-6 bln'},{k:'akselerasi',t:'Akselerasi 0-7-21 hr +12 bln'},{k:'dialisis',t:'Dialisis 40 µg 0-1-2-6 bln'}],
+ seri:(p,d)=>{const k=d[0].skema;if(k==='akselerasi')return {n:4,nama:'akselerasi',iv:[{min:7,rec:7},{min:14,rec:14},{min:344,rec:344}]};if(k==='dialisis')return {n:4,nama:'dialisis 40 µg',iv:[{min:28,rec:30},{min:28,rec:30},{min:56,rec:120}]};return {n:3,iv:[{min:28,rec:30},{min:56,rec:150,fromFirst:112}]}},
+ booster:p=>{const f=fl(p);if(f.dialisis)return {years:1,label:'Cek anti-HBs tahunan (dialisis); booster bila <10',level:'rek'};if(f.nakes||f.hiv||f.imunokompromais)return {days:45,minDays:30,label:'Cek anti-HBs 1–2 bln pasca seri',level:'rek',ket:'<10 mIU/mL → ulang 1 seri lalu cek ulang'};return null},
+ ind:p=>{const f=fl(p),a=ageOf(p);if(a<60)return {level:'rek',why:'Dewasa <60 th belum pernah vaksin (skrining HBsAg/anti-HBs sesuai indikasi)'};if(f.dm||f.ckd||f.hati||f.hiv||f.nakes||f.dialisis||f.msm)return {level:'rek',why:'≥60 th dengan faktor risiko'};return {level:'pert',why:'≥60 th tanpa faktor risiko'}},
+ pengganti:'Antarmerek vaksin HepB rekombinan dapat saling menggantikan dengan dosis sesuai label. Jangan mengulang seri karena jeda panjang — lanjutkan dosis berikutnya.',
+ ki:['Anafilaksis terhadap dosis sebelumnya atau ragi'],perhatian:['Sakit akut sedang–berat'],
+ es:['Nyeri lokal','Demam ringan, lelah'],tl:['Simptomatik'],
+ acc:(p,avail)=>avail>=200?{s:[0,30,180],nama:'standar'}:{s:[0,7,21,365],nama:'akselerasi (Engerix-B)'},lead:0},
+{id:'hepa',nama:'Hepatitis A',kat:'Risiko / perjalanan',live:false,jenis:'Inaktif',
+ produk:['Havrix 1440 (dewasa) — GSK','Avaxim 160 — Sanofi','Lainnya'],rute:'IM deltoid',
+ jadwal:'2 dosis: 0 dan 6–12 bln (Avaxim: 6–36 bln). Satu dosis sebelum berangkat (idealnya ≥2 mgg) sudah protektif untuk perjalanan.',
+ seri:()=>({n:2,iv:[{min:180,rec:180}]}),booster:()=>null,
+ ind:p=>{const f=fl(p);if(f.hati||f.msm||f.hiv)return {level:'rek',why:'Penyakit hati kronik/HIV/MSM'};if(f.pekerjaMakanan)return {level:'pert',why:'Penjamah makanan'};return null},
+ pengganti:'Havrix ↔ Avaxim ↔ Healive dapat saling menggantikan untuk dosis kedua.',
+ ki:['Anafilaksis terhadap dosis sebelumnya/komponen'],perhatian:['Kehamilan: boleh bila ada risiko'],
+ es:['Nyeri lokal','Sakit kepala, malaise'],tl:['Simptomatik'],acc:()=>({s:[0,180]}),lead:14},
+{id:'mmr',nama:'MMR (campak, gondongan, rubela)',kat:'Rutin',live:true,jenis:'Hidup dilemahkan',
+ produk:['M-M-R II — MSD','Priorix — GSK','MR Bio Farma (campak-rubela, tanpa mumps)','Lainnya'],rute:'SK/IM, 0,5 mL',
+ jadwal:'Tanpa bukti imunitas: dewasa umum 1 dosis; nakes, mahasiswa, pelaku perjalanan internasional, HIV CD4 ≥200: 2 dosis jarak ≥28 hari. Hindari kehamilan 4 mgg pasca vaksin.',
+ skema:[{k:'1',t:'1 dosis (dewasa umum)'},{k:'2',t:'2 dosis (nakes/pelajar/perjalanan)'}],
+ seri:(p,d)=>(d[0].skema==='2'||fl(p).nakes)?{n:2,iv:[{min:28,rec:28}]}:{n:1,iv:[]},booster:()=>null,
+ ind:p=>({level:'pert',why:'Bila tanpa bukti imunitas (dokumen vaksin/serologi)'}),
+ pengganti:'M-M-R II ↔ Priorix dapat saling menggantikan. MR Bio Farma hanya campak–rubela (tanpa gondongan) — pakai bila MMR tidak tersedia; indikasi dewasa MR/MMR diperluas BPOM April 2026.',
+ ki:['Kehamilan','Imunodefisiensi berat (keganasan hematologi, kemoterapi, steroid ≥20 mg/hari ≥14 hari, transplantasi)','HIV dengan CD4 <200','Anafilaksis terhadap neomisin/gelatin/dosis sebelumnya'],
+ perhatian:['Pasca produk darah/IVIG: tunda 3–11 bln sesuai produk','Riwayat trombositopenia','Uji tuberkulin/IGRA: hari sama atau tunda ≥4 mgg'],
+ es:['Demam 5–12 hari pasca vaksin (5–15%)','Ruam transien','Artralgia (wanita dewasa hingga 25%)','Jarang: ITP (1/30.000–40.000)'],
+ tl:['Antipiretik','Artralgia: NSAID','Trombositopenia: evaluasi hematologi, laporkan KIPI'],
+ acc:()=>({s:[0,28]}),lead:14},
+{id:'var',nama:'Varisela',kat:'Rutin',live:true,jenis:'Hidup dilemahkan',
+ produk:['Varivax — MSD','Varilrix — GSK','Varicella GCC — GC Biopharma','Lainnya'],rute:'SK, 0,5 mL',
+ jadwal:'Tanpa bukti imunitas: 2 dosis jarak 4–8 mgg (min 28 hari). Hindari salisilat 6 mgg, hindari kehamilan 1 bln.',
+ seri:()=>({n:2,iv:[{min:28,rec:42}]}),booster:()=>null,
+ ind:p=>({level:'pert',why:'Tanpa riwayat varisela/2 dosis/serologi — prioritas nakes & wanita usia subur'}),
+ pengganti:'Varivax ↔ Varilrix ↔ GCC dapat saling menggantikan.',
+ ki:['Kehamilan','Imunodefisiensi berat','HIV CD4 <200','Anafilaksis gelatin/neomisin'],perhatian:['Produk darah dalam 11 bln','Antivirus (asiklovir/valasiklovir) 24 jam sebelum s.d. 14 hari sesudah'],
+ es:['Nyeri lokal','Ruam varisela-like 3–5% (lesi sedikit)','Demam'],
+ tl:['Ruam ringan: simptomatik; hindari kontak dengan imunokompromais berat bila ada lesi'],
+ acc:()=>({s:[0,28]}),lead:14},
+{id:'zoster',nama:'Herpes zoster (RZV)',kat:'Rutin ≥50 / imunokompromais',live:false,jenis:'Rekombinan beradjuvan (gE/AS01B)',
+ produk:['Shingrix (RZV) — GSK','Lainnya'],rute:'IM deltoid, 0,5 mL',
+ jadwal:'≥50 th, atau ≥19 th imunokompromais: 2 dosis 0, 2–6 bln (imunokompromais dapat 1–2 bln; min 4 mgg). Diberikan terlepas dari riwayat zoster/varisela atau ZVL sebelumnya (≥8 bln pasca ZVL).',
+ seri:p=>({n:2,iv:[{min:28,rec:imuno(fl(p))?30:60}]}),booster:()=>null,
+ ind:p=>{const a=ageOf(p),f=fl(p);if(a>=50)return {level:'rek',why:'Usia ≥50 tahun'};if(imuno(f)||f.isxAny)return {level:'rek',why:'Imunokompromais / terapi imunosupresan ≥19 th (PAPDI; ACR 2022)'};return null},
+ pengganti:'Tidak ada pengganti untuk dosis 2 — harus RZV. Bila dosis 2 terlambat >6 bln, berikan segera tanpa mengulang.',
+ ki:['Anafilaksis terhadap komponen/dosis sebelumnya'],perhatian:['Zoster akut: tunda sampai lesi sembuh','Kehamilan: tunda','GBS: sinyal ringan pada lansia (FDA 2023)'],
+ es:['Reaktogenik: nyeri lokal ~80%, mialgia, lelah, menggigil; grade 3 ~17%, 1–3 hari'],
+ tl:['Edukasi sebelum vaksin (alasan sering gagal dosis 2)','Parasetamol/NSAID bila perlu'],
+ acc:()=>({s:[0,60]}),lead:0},
+{id:'pneumo',nama:'Pneumokokus (PCV/PPSV23)',kat:'Rutin ≥50 / risiko',live:false,jenis:'Konjugat (PCV13/15/20) & polisakarida (PPSV23)',
+ produk:['Prevenar 20 (PCV20) — Pfizer','Prevenar 13 (PCV13) — Pfizer','Vaxneuvance (PCV15) — MSD','Pneumovax 23 (PPSV23) — MSD','Lainnya'],rute:'IM, 0,5 mL',
+ jadwal:'PAPDI 2025: PCV mulai usia 18 th, PPSV23 mulai 50 th. Opsi: PCV20 1 dosis (selesai), ATAU PCV13/15 → PPSV23 ≥1 th (≥8 mgg bila imunokompromais/asplenia/CKD/kebocoran LCS/implan koklea). Riwayat PPSV23 saja → PCV20 ≥1 th. PCV13 + PPSV23 lengkap → pertimbangkan PCV20 ≥5 th dari dosis terakhir.',
+ custom:(p,d)=>{const f=fl(p),a=ageOf(p);const has=k=>d.filter(x=>(x.produk||'').includes(k));const short=imuno(f)||f.ckd||f.csf;
+   if(has('PCV20').length||has('PCV21').length)return {done:true};
+   const pcv=[...has('PCV13'),...has('PCV15')],pp=has('PPSV23');
+   if(!d.length){const ind=(a>=50)?{level:'rek',why:'Usia ≥50 th'}:(komorbid(f)||imuno(f)||f.isxAny||f.csf)?{level:'rek',why:'Usia 18–49 dengan kondisi risiko / imunosupresan'}:{level:'pert',why:'PCV dapat diberikan mulai 18 th (PAPDI 2025)'};return {kind:'belum',label:'PCV20 1 dosis (atau PCV13/15 → PPSV23)',due:TODAY,min:TODAY,level:ind.level,ket:ind.why}}
+   const last=d[d.length-1].d;
+   if(pcv.length&&!pp.length){const gap=short?56:365;return {kind:'seri',label:'PPSV23 (atau PCV20) setelah PCV13/15',min:addDays(last,gap),due:addDays(last,gap),level:'rek',ket:short?'Interval 8 mgg (imunokompromais/CKD/LCS)':'Interval ≥1 tahun'}}
+   if(pp.length&&!pcv.length)return {kind:'seri',label:'PCV20 setelah PPSV23',min:addDays(last,365),due:addDays(last,365),level:'rek',ket:'≥1 tahun setelah PPSV23'};
+   return {kind:'booster',label:'PCV20 (opsional) ≥5 th setelah dosis terakhir',min:addYears(last,5),due:addYears(last,5),level:'pert',ket:'Shared decision bila PCV13 + PPSV23 sudah lengkap'}},
+ pengganti:'PCV20 tidak tersedia → PCV13/PCV15 lalu PPSV23 sesuai interval. PCV13 ↔ PCV15 setara untuk langkah pertama. Jangan memberi PCV dan PPSV23 pada hari yang sama.',
+ ki:['Anafilaksis terhadap dosis sebelumnya/komponen (termasuk toksoid difteri untuk PCV)'],perhatian:['Sakit akut sedang–berat'],
+ es:['Nyeri/bengkak lokal','Mialgia, lelah, demam ringan','PPSV23 ulangan: reaksi lokal lebih besar'],tl:['Simptomatik'],
+ acc:()=>({s:[0]}),lead:14},
+{id:'rsv',nama:'RSV',kat:'Rutin ≥60 / risiko',live:false,jenis:'Rekombinan preF (beradjuvan: Arexvy; tanpa adjuvan: Abrysvo)',
+ produk:['Arexvy (beradjuvan) — GSK','Abrysvo (non-adjuvan) — Pfizer','Lainnya'],rute:'IM deltoid, 0,5 mL',
+ jadwal:'1 dosis. PAPDI 2025: RSV beradjuvan ≥60 th atau 50–59 th dengan komorbid (kardiovaskular, respirasi, ginjal kronik, terapi pengganti ginjal). RSV tanpa adjuvan ≥60 th atau ibu hamil 24–36 mgg (label; ACIP: 32–36 mgg). Revaksinasi belum direkomendasikan.',
+ seri:()=>({n:1,iv:[]}),booster:()=>null,
+ ind:p=>{const a=ageOf(p),f=fl(p);if(a>=60)return {level:'rek',why:'Usia ≥60 tahun'};if(a>=50&&(f.jantung||f.paru||f.ckd||f.dialisis||f.dm))return {level:'rek',why:'50–59 th dengan komorbid'};if(f.hamil)return {level:'pert',why:'Hamil: Abrysvo UK 24–36 mgg (ACIP 32–36)'};return null},
+ pengganti:'Dosis tunggal — tidak ada dosis lanjutan. Arexvy dan Abrysvo tidak dicampur/diulang.',
+ ki:['Anafilaksis terhadap komponen'],perhatian:['GBS: peringatan label FDA (Jan 2025) — ~7–9 kasus per juta dosis pada ≥65 th','Arexvy tidak untuk kehamilan'],
+ es:['Nyeri lokal, lelah, mialgia, sakit kepala 1–2 hari'],tl:['Simptomatik; kelemahan ekstremitas/parestesia ascenden ≤42 hari → evaluasi GBS & laporkan KIPI serius'],
+ acc:()=>({s:[0]}),lead:14},
+{id:'covid',nama:'COVID-19',kat:'Risiko',live:false,jenis:'mRNA / subunit protein / inaktif (sesuai ketersediaan)',
+ produk:['IndoVac (subunit) — Bio Farma','Inavac (inaktif) — Unair/Biotis','Comirnaty (mRNA) — Pfizer','Lainnya'],rute:'IM deltoid',
+ jadwal:'Lansia ≥60, komorbid, imunokompromais, hamil, nakes: 1 dosis varian terbaru tiap 12 bln (imunokompromais berat dapat 6 bln). Dewasa sehat: berdasarkan diskusi.',
+ seri:()=>({n:1,iv:[]}),booster:p=>{const f=fl(p),a=ageOf(p);if(a>=60||komorbid(f)||imuno(f)||f.nakes||f.hamil)return {days:f.imunokompromais?182:365,label:'Dosis ulang varian terbaru',level:'rek'};return null},
+ ind:p=>{const f=fl(p),a=ageOf(p);if(a>=60||komorbid(f)||imuno(f)||f.hamil||f.nakes)return {level:'rek',why:'Kelompok risiko tinggi'};return {level:'pert',why:'Dewasa sehat: individual'}},
+ pengganti:'Heterolog diperbolehkan (platform apa pun yang tersedia).',
+ ki:['Anafilaksis terhadap dosis sebelumnya/komponen (PEG untuk mRNA, polisorbat)'],perhatian:['Riwayat miokarditis/perikarditis pasca mRNA → pilih non-mRNA','MIS-A'],
+ es:['Nyeri lokal, demam, lelah 1–2 hari','mRNA: miokarditis jarang (pria muda, ≤7 hari)'],tl:['Nyeri dada/sesak/berdebar ≤7 hari → EKG, troponin; laporkan KIPI serius bila rawat'],
+ acc:()=>({s:[0]}),lead:14},
+{id:'menacwy',nama:'Meningokokus ACWY',kat:'Perjalanan / risiko',live:false,jenis:'Konjugat (Nimenrix, MenQuadfi, Menveo) / polisakarida',
+ produk:['Menivax ACYW135 (polisakarida) — Bio Farma','Nimenrix (konjugat) — Pfizer','MenQuadfi (konjugat) — Sanofi','Menveo (konjugat) — GSK','Lainnya'],rute:'IM (konjugat) / SK (polisakarida)',
+ jadwal:'Umrah/Haji (KSA 1447H): wajib, diberikan ≥10 hari sebelum tiba; validitas konjugat 5 th, polisakarida 3 th; konjugat lebih dianjurkan. Asplenia, defisiensi komplemen, HIV: 2 dosis jarak ≥8 mgg, booster tiap 5 th. Mikrobiologis terpapar N. meningitidis: 1 dosis, booster 5 th.',
+ seri:p=>{const f=fl(p);return (f.asplenia||f.hiv||f.komplemen)?{n:2,iv:[{min:56,rec:56}]}:{n:1,iv:[]}},
+ booster:(p,d)=>{const f=fl(p);const poly=/polisakarida/i.test(d[d.length-1].produk||'');if(f.asplenia||f.hiv||f.komplemen||f.lab)return {years:5,label:'Booster 5 tahun (risiko menetap)',level:'rek'};return {years:poly?3:5,label:`Sertifikat Umrah/Haji habis (${poly?'polisakarida 3':'konjugat 5'} th)`,level:'pert',ket:'Perlu ulang hanya bila akan umrah/haji/ke sabuk meningitis'}},
+ ind:p=>{const f=fl(p);if(f.asplenia||f.hiv||f.komplemen||f.lab)return {level:'rek',why:'Asplenia/komplemen/HIV/lab mikrobiologi'};return null},
+ pengganti:'Nimenrix ↔ MenQuadfi ↔ Menveo dapat saling menggantikan untuk dosis kedua/booster. Riwayat Menivax (polisakarida) → booster dengan konjugat dianjurkan bila tersedia. Sertifikat: polisakarida 3 th, konjugat 5 th. MenB bukan pengganti ACWY.',
+ ki:['Anafilaksis terhadap dosis sebelumnya/komponen (toksoid difteri/tetanus untuk konjugat)'],perhatian:['Riwayat GBS (data lama Menactra; bukan KI untuk produk lain)'],
+ es:['Nyeri lokal','Sakit kepala, lelah, demam ringan'],tl:['Simptomatik'],
+ acc:p=>{const f=fl(p);return (f.asplenia||f.hiv)?{s:[0,56]}:{s:[0]}},lead:10},
+{id:'tifoid',nama:'Tifoid',kat:'Risiko / perjalanan',live:false,jenis:'Vi polisakarida (Vi-PS) / konjugat (TCV)',
+ produk:['Typhim Vi (Vi-PS) — Sanofi','Bio-TCV (konjugat) — Bio Farma','Lainnya'],rute:'IM, 0,5 mL',
+ jadwal:'1 dosis ≥2 mgg sebelum paparan. Vi-PS: ulang tiap 3 th bila risiko berlanjut. TCV: kebutuhan booster dewasa belum ditetapkan.',
+ seri:()=>({n:1,iv:[]}),booster:(p,d)=>(d[d.length-1].produk||'').includes('Vi-PS')?{years:3,label:'Ulangan Vi-PS 3 tahun',level:'pert'}:null,
+ ind:p=>fl(p).pekerjaMakanan?{level:'rek',why:'Penjamah makanan'}:{level:'pert',why:'Endemis Indonesia (PAPDI: tiap 3 th untuk Vi-PS)'},
+ pengganti:'Vi-PS ↔ TCV: saat ulangan, TCV dapat menggantikan Vi-PS.',
+ ki:['Anafilaksis terhadap komponen'],perhatian:['Sakit akut sedang–berat'],
+ es:['Nyeri lokal','Demam ringan, sakit kepala'],tl:['Simptomatik'],acc:()=>({s:[0]}),lead:14},
+{id:'yf',nama:'Demam kuning (Yellow fever)',kat:'Perjalanan',live:true,jenis:'Hidup dilemahkan (17D)',
+ produk:['Stamaril (17D) — Sanofi','Lainnya'],rute:'SK/IM, 0,5 mL',
+ jadwal:'1 dosis seumur hidup (IHR 2016). Sertifikat ICV berlaku 10 hari setelah vaksin. Booster/ulang: HIV, hamil saat dosis pertama, pasca HSCT, atau risiko tinggi berkelanjutan (10 th). Di Indonesia diberikan di BBKK/KKP/klinik berwenang.',
+ seri:()=>({n:1,iv:[]}),booster:p=>fl(p).hiv?{years:10,label:'Ulang 10 th (HIV)',level:'rek'}:null,ind:()=>null,
+ pengganti:'Tidak ada pengganti. Bila KI → surat pengecualian medis (exemption) di ICV.',
+ ki:['Usia <6 bln','Anafilaksis telur/gelatin','Penyakit timus/timektomi','Imunodefisiensi berat, HIV CD4 <200','Kehamilan (kecuali risiko tak terhindarkan)'],
+ perhatian:['Usia ≥60 th: risiko YEL-AVD/YEL-AND ↑ — timbang kebutuhan','Menyusui','HIV CD4 200–499'],
+ es:['Sakit kepala, mialgia, demam ringan 5–10 hari','Jarang serius: YEL-AND, YEL-AVD (0,4/100.000; lebih tinggi ≥60 th)'],
+ tl:['Gejala neurologis/multiorgan ≤30 hari → rawat, laporkan KIPI serius'],acc:()=>({s:[0]}),lead:10},
+{id:'je',nama:'Japanese encephalitis',kat:'Perjalanan / risiko',live:true,jenis:'Hidup kimerik (Imojev); vaksin inaktif (Ixiaro) tidak beredar di Indonesia',
+ produk:['Imojev (hidup) — Sanofi','Lainnya'],rute:'SK, 0,5 mL',
+ jadwal:'Imojev: 1 dosis dewasa (≥14 hari sebelum paparan); booster dewasa tidak rutin diperlukan. Indikasi: tinggal ≥1 bln di area endemis/rural (termasuk Bali), pekerja lab. Ixiaro (inaktif) tidak memiliki izin edar di Indonesia — riwayat Ixiaro dari luar negeri tetap dapat dicatat.',
+ skema:[{k:'imojev',t:'Imojev 1 dosis'},{k:'ixiaro',t:'Ixiaro 0-28 hr (riwayat luar negeri)'}],
+ seri:(p,d)=>{const k=d[0].skema||((d[0].produk||'').startsWith('Ixiaro')?'ixiaro':'imojev');if(k==='imojev')return {n:1,iv:[]};return {n:2,iv:[{min:k==='ixacc'?7:28,rec:k==='ixacc'?7:28}]}},
+ booster:(p,d)=>(d[0].produk||'').startsWith('Ixiaro')?{days:365,label:'Booster Ixiaro 12–24 bln (bila risiko berlanjut)',level:'pert'}:null,ind:()=>null,
+ pengganti:'Di Indonesia hanya Imojev. Seri Ixiaro yang belum tuntas (dimulai di luar negeri): 1 dosis Imojev dapat dipertimbangkan sebagai pengganti (data terbatas). Imojev KI (hamil/imunokompromais) → tidak ada alternatif inaktif di Indonesia; edukasi proteksi gigitan nyamuk.',
+ ki:['Kehamilan','Imunodefisiensi berat, HIV CD4 <200 (vaksin hidup)','Anafilaksis terhadap komponen'],perhatian:['Menyusui: timbang manfaat'],
+ es:['Nyeri lokal, sakit kepala, mialgia'],tl:['Simptomatik'],
+ acc:()=>({s:[0],nama:'Imojev 1 dosis (hidup)'}),lead:14},
+{id:'rabies',nama:'Rabies (PrEP)',kat:'Risiko / perjalanan',live:false,jenis:'Inaktif kultur sel (Vero/PCEC)',
+ produk:['Verorab (PVRV) — Sanofi','Rabivax-S (PVRV) — Serum Institute','Rabipur (PCECV) — Bavarian Nordic','Lainnya'],rute:'IM 1 dosis penuh, atau ID 0,1 mL (2 lokasi)',
+ jadwal:'PrEP (WHO 2018/ACIP 2022): hari 0 dan 7. Risiko menetap >3 th: cek titer atau 1 booster antara 21 hari–3 th. PEP pasca PrEP: hari 0 dan 3, tanpa RIG. PEP tanpa PrEP: Essen 0-3-7-14 (+28 bila imunokompromais) atau ID 0-3-7 (2 lokasi) + RIG pada kategori III.',
+ seri:()=>({n:2,iv:[{min:7,rec:7}]}),booster:p=>fl(p).risikoRabies?{years:3,label:'Cek titer / booster (risiko menetap)',level:'pert'}:null,
+ ind:p=>fl(p).risikoRabies?{level:'rek',why:'Pekerjaan berisiko (dokter hewan/lapangan/lab)'}:null,
+ pengganti:'Usahakan merek yang sama untuk seluruh seri. Bila tidak tersedia, WHO membolehkan berganti ke vaksin rabies kultur sel lain (Verorab ↔ Rabivax-S ↔ Rabipur) dengan dosis dan rute yang sama, tanpa mengulang seri.',
+ ki:['PrEP: anafilaksis terhadap dosis sebelumnya. PEP: tidak ada KI absolut'],perhatian:['Klorokuin/hidroksiklorokuin menurunkan respons ID → gunakan IM'],
+ es:['Nyeri lokal, sakit kepala, mual','Booster berulang: reaksi tipe III (jarang)'],tl:['Simptomatik'],acc:()=>({s:[0,7]}),lead:0},
+{id:'polio',nama:'Polio (booster dewasa)',kat:'Perjalanan',live:false,jenis:'IPV (inaktif) / bOPV, nOPV2 (hidup)',
+ produk:['IPV — Bio Farma','Imovax Polio (IPV) — Sanofi','bOPV — Bio Farma','nOPV2 — Bio Farma','Lainnya'],rute:'IPV IM/SK; OPV oral',
+ jadwal:'Dewasa dengan primer lengkap: 1 booster IPV seumur hidup bila ke negara terjangkit. Rekomendasi sementara WHO (IHR): tinggal >4 mgg di/dari negara terjangkit → 1 dosis dalam 4 mgg–12 bln sebelum keberangkatan. KSA (Umrah 1447H): OPV dianjurkan ≤6 bln dan ≥4 mgg sebelum tiba bagi negara tertentu — cek daftar tahun berjalan.',
+ seri:()=>({n:1,iv:[]}),booster:()=>null,ind:()=>null,
+ pengganti:'IPV ↔ OPV dapat saling melengkapi; untuk syarat KSA ikuti jenis yang diminta pada dokumen tahun berjalan.',
+ ki:['Anafilaksis terhadap neomisin/streptomisin/polimiksin B (IPV)','OPV: imunodefisiensi berat & kontak serumah imunodefisiensi'],perhatian:['Kehamilan: IPV bila diperlukan'],
+ es:['IPV: nyeri lokal ringan'],tl:['Simptomatik'],acc:()=>({s:[0]}),lead:28},
+{id:'dengue',nama:'Dengue (TAK-003)',kat:'Risiko (endemis)',live:true,jenis:'Hidup dilemahkan tetravalen',
+ produk:['Qdenga (TAK-003) — Takeda','Lainnya'],rute:'SK, 0,5 mL',
+ jadwal:'BPOM: usia 6–45 th, 2 dosis 0 dan 3 bln, tanpa skrining serostatus. Belum ada rekomendasi booster.',
+ seri:()=>({n:2,iv:[{min:90,rec:90}]}),booster:()=>null,
+ ind:p=>{const a=ageOf(p);return a<=45?{level:'pert',why:'Usia ≤45 th di daerah endemis'}:null},
+ pengganti:'Tidak ada pengganti untuk dosis 2. Bila terlambat, berikan segera tanpa mengulang.',
+ ki:['Kehamilan dan menyusui','Imunodefisiensi kongenital/didapat termasuk HIV simtomatik atau CD4 rendah','Anafilaksis komponen'],perhatian:['Hindari kehamilan 1 bln pasca vaksin'],
+ es:['Nyeri lokal, sakit kepala, mialgia','Ruam/demam ringan'],tl:['Simptomatik'],acc:()=>({s:[0,90]}),lead:14},
+{id:'menb',nama:'Meningokokus B',kat:'Risiko',live:false,tidakTersedia:true,jenis:'Rekombinan protein (4CMenB) — TIDAK tersedia di Indonesia',
+ produk:['Bexsero (4CMenB) — diberikan di luar negeri','Lainnya'],rute:'IM deltoid, 0,5 mL',
+ jadwal:'Tidak ada vaksin MenB berizin edar di Indonesia — entri ini hanya untuk mencatat riwayat dari luar negeri. Indikasi (ACIP): asplenia, defisiensi komplemen/eculizumab, pekerja lab N. meningitidis: 2 dosis jarak ≥1 bulan; booster 1 tahun pasca seri, lalu tiap 2–3 tahun selama risiko menetap. Pasien asplenia yang akan tinggal/bepergian ke luar negeri dapat divaksin di negara tujuan.',
+ seri:()=>({n:2,iv:[{min:28,rec:30}]}),booster:(p,d)=>{const f=fl(p);if(!(f.asplenia||f.komplemen||f.lab))return null;return d.length<=2?{days:365,label:'Booster 1 tahun pasca seri',level:'rek'}:{years:2,label:'Booster tiap 2–3 tahun',level:'rek'}},
+ ind:()=>null,
+ pengganti:'Tidak ada pengganti di Indonesia (MenACWY tidak melindungi serogrup B). Bexsero dan Trumenba tidak dapat saling menggantikan; seri harus produk yang sama.',
+ ki:['Anafilaksis terhadap komponen/dosis sebelumnya'],perhatian:['Tutup jarum suntik mengandung lateks (Bexsero)','Kehamilan: tunda kecuali risiko tinggi'],
+ es:['Nyeri lokal berat cukup sering','Demam, mialgia, sakit kepala 1–3 hari'],tl:['Parasetamol bila perlu'],acc:()=>({s:[0,30]}),lead:14},
+{id:'hib',nama:'Haemophilus influenzae tipe b (Hib)',kat:'Risiko',live:false,jenis:'Konjugat PRP-T',
+ produk:['Act-HIB — Sanofi','Lainnya'],rute:'IM, 0,5 mL',
+ jadwal:'Act-HIB berizin edar di Indonesia. Dewasa dengan asplenia anatomis/fungsional atau rencana splenektomi elektif yang belum vaksin Hib: 1 dosis (≥14 hari pra-operasi). Pasca HSCT: 3 dosis, mulai 6–12 bulan pasca transplantasi.',
+ seri:()=>({n:1,iv:[]}),booster:()=>null,ind:p=>fl(p).asplenia?{level:'rek',why:'Asplenia / rencana splenektomi'}:null,
+ pengganti:'Act-HIB satu-satunya Hib monovalen; bila stok kosong, vaksin kombinasi pediatrik di luar label untuk dewasa — tunda sampai stok tersedia.',
+ ki:['Anafilaksis terhadap komponen (toksoid tetanus)'],perhatian:['Sakit akut sedang–berat'],
+ es:['Nyeri lokal ringan'],tl:['Simptomatik'],acc:()=>({s:[0]}),lead:14},
+{id:'mpox',nama:'Mpox (MVA-BN)',kat:'Risiko (program terbatas)',live:false,jenis:'Non-replikasi (MVA)',
+ produk:['MVA-BN (Jynneos) — Bavarian Nordic','Lainnya'],rute:'SK 0,5 mL (ID 0,1 mL dosis hemat)',
+ jadwal:'2 dosis jarak 28 hari untuk kelompok risiko tinggi (sesuai program Kemenkes). PEP: ≤4 hari pasca paparan (hingga 14 hari).',
+ seri:()=>({n:2,iv:[{min:28,rec:28}]}),booster:()=>null,ind:p=>fl(p).msm?{level:'pert',why:'Kelompok risiko — sesuai ketersediaan program'}:null,
+ pengganti:'Dosis 2 MVA-BN; tidak ada pengganti.',ki:['Anafilaksis terhadap dosis sebelumnya'],perhatian:['Riwayat keloid → rute SK'],
+ es:['Nyeri/indurasi lokal, lelah'],tl:['Simptomatik'],acc:()=>({s:[0,28]}),lead:14}
+];
+VAX.forEach(v=>{if(!v.booster)v.booster=()=>null});
+const VX=Object.fromEntries(VAX.map(v=>[v.id,v]));
+function prods(v){const f=S.form[v.id]||{};const hide=f.hide||[];return [...v.produk.filter(x=>x!=='Lainnya'&&!hide.includes(x)),...(f.add||[]),'Lainnya']}
+function isLiveDose(h){const v=VX[h.vid];if(!v)return false;if(v.id==='je')return (h.produk||'').startsWith('Imojev')||h.skema==='imojev';if(v.id==='polio')return /OPV/.test(h.produk||'');return v.live}
+
+/* ============ Destinations ============ */
+const DEST={
+ umroh:{t:'Umrah (Arab Saudi)',items:[['menacwy','wajib','Konjugat ≥10 hari sebelum tiba; berlaku 5 th (polisakarida 3 th)'],['flu','anjuran','Formula terbaru'],['covid','anjuran','Lansia/komorbid'],['pneumo','anjuran','≥50 th atau komorbid'],['polio','cek',"OPV ≤6 bln & ≥4 mgg sebelum tiba bila negara asal ada di daftar KSA tahun berjalan",180],['td','anjuran','Bila booster >10 th']],
+   notes:['Sumber: Health Requirements for Umrah 1447H (MoH KSA). Persyaratan diperbarui tiap tahun — cek dokumen terbaru.','Umrah Ramadan: risiko IMD serogrup W tinggi; jangan menunda MenACWY.']},
+ haji:{t:'Haji (Arab Saudi)',items:[['menacwy','wajib','Konjugat ≥10 hari sebelum tiba'],['flu','anjuran','Sangat dianjurkan'],['pneumo','anjuran','≥50 th atau komorbid'],['covid','anjuran','Lansia/komorbid'],['polio','cek','Sesuai ketentuan KSA/Kemenkes tahun berjalan',180],['rsv','anjuran','≥60 th/komorbid'],['td','anjuran','Bila booster >10 th']],
+   notes:['Jemaah Indonesia: ikuti ketentuan Kemenkes (BBKK/KKP) tahun berjalan dan buku kesehatan jemaah (ICV).']},
+ yfafrika:{t:'Afrika sub-Sahara / Amerika Selatan (endemis demam kuning)',items:[['yf','wajib','≥10 hari sebelum tiba; ICV'],['tifoid','anjuran',''],['hepa','anjuran',''],['hepb','anjuran','Tinggal lama/risiko'],['menacwy','anjuran','Sabuk meningitis Sahel Des–Jun'],['rabies','anjuran','Aktivitas berisiko/area terpencil'],['polio','cek','Negara terjangkit polio',365],['mmr','anjuran','Tanpa bukti 2 dosis']],
+   notes:['Sertifikat ICV berlaku seumur hidup; beberapa negara mensyaratkan bagi pelaku transit >12 jam di bandara negara endemis.','Malaria: profilaksis terpisah dari jadwal ini.']},
+ asia:{t:'Asia Selatan / Asia Tenggara (rural, lama)',items:[['tifoid','anjuran',''],['hepa','anjuran',''],['je','anjuran','Tinggal ≥1 bln atau rural/musim hujan'],['rabies','anjuran','Aktivitas berisiko'],['polio','cek','Pakistan/Afghanistan: WHO TR, dosis 4 mgg–12 bln sebelum keberangkatan',365],['hepb','anjuran','Tinggal lama'],['mmr','anjuran','Tanpa bukti 2 dosis']],notes:[]},
+ studiUS:{t:'Studi/kerja — Amerika Serikat',items:[['mmr','wajib','Umumnya 2 dosis'],['menacwy','wajib','Umumnya 1 dosis ≥16 th bagi penghuni asrama'],['td','wajib','Tdap ≤10 th'],['var','wajib','2 dosis/bukti imunitas'],['hepb','anjuran','Wajib untuk program kesehatan'],['flu','anjuran',''],['covid','cek','Kebijakan institusi'],['hpv','anjuran','≤26 th']],
+   notes:['Persyaratan berbeda per universitas — minta formulir imunisasi institusi. Skrining TB (IGRA) sering diminta.']},
+ studiUK:{t:'Studi/kerja — Inggris',items:[['mmr','anjuran','2 dosis'],['menacwy','anjuran','Mahasiswa <25 th'],['td','anjuran',''],['hpv','anjuran','≤26 th']],notes:['Visa >6 bln dari Indonesia: wajib skrining TB (foto toraks) di klinik yang ditunjuk UKVI.']},
+ studiAU:{t:'Studi/kerja — Australia/Selandia Baru',items:[['mmr','anjuran','2 dosis'],['td','anjuran','Tdap'],['flu','anjuran',''],['hepb','cek','Wajib bagi program kesehatan'],['var','cek','Program kesehatan']],notes:['Visa: pemeriksaan kesehatan & foto toraks oleh panel physician.']},
+ nakes:{t:'Pendidikan/kerja tenaga kesehatan',items:[['hepb','wajib','+ anti-HBs 1–2 bln pasca seri'],['mmr','wajib','2 dosis/serologi'],['var','wajib','2 dosis/serologi'],['td','wajib','Tdap'],['flu','wajib','Tahunan'],['covid','anjuran',''],['menacwy','cek','Lab mikrobiologi']],notes:['Dokumentasi anti-HBs ≥10 mIU/mL biasanya diminta.']},
+ eropa:{t:'Eropa/Schengen (wisata singkat)',items:[['mmr','anjuran','Wabah campak di beberapa negara'],['td','anjuran',''],['flu','anjuran','Musim dingin']],notes:['Tidak ada vaksin wajib untuk masuk.']}
+};
+
+/* ============ Engine ============ */
+function dosesOf(p,vid){return (p.history||[]).filter(h=>h.vid===vid&&h.tgl).map(h=>({...h,d:parseD(h.tgl)})).sort((a,b)=>a.d-b.d)}
+function kiFor(p,v){const f=fl(p),a=ageOf(p),r=[];const live=v.live;
+ if(live){if(f.hamil)r.push({t:'Hamil — vaksin hidup KI',hard:true});if(f.imunokompromais)r.push({t:'Imunodefisiensi berat — vaksin hidup KI',hard:true});if(f.cd4lt200)r.push({t:'HIV CD4 <200 — vaksin hidup KI',hard:true})}
+ if(v.id==='hpv'&&f.hamil)r.push({t:'Hamil — tunda HPV',hard:true});
+ if(v.id==='zoster'&&f.hamil)r.push({t:'Hamil — tunda RZV',hard:true});
+ if(v.id==='dengue'&&f.menyusui)r.push({t:'Menyusui — KI Qdenga',hard:true});
+ if(v.id==='yf'&&a>=60)r.push({t:'≥60 th — risiko YEL-AVD ↑',hard:false});
+ if(v.id==='yf'&&f.menyusui)r.push({t:'Menyusui — perhatian',hard:false});
+ if(v.id==='rsv'&&f.riwayatGBS)r.push({t:'Riwayat GBS — timbang manfaat',hard:false});
+ if((v.id==='flu'||v.id==='td')&&f.riwayatGBS)r.push({t:'Riwayat GBS — perhatian (cek ≤6 mgg pasca vaksin)',hard:false});
+ if((v.id==='mmr')&&f.trombositopenia)r.push({t:'Riwayat trombositopenia — perhatian',hard:false});
+ if(f.anafilaksis)r.push({t:'Riwayat anafilaksis: '+f.anafilaksis+' — cek komponen',hard:false});
+ const X=isxInfo(p);
+ if(X&&X.status==='aktif'){
+  if(live&&X.any){const pend=X.live.some(l=>!l.known||l.until>TODAY);r.push(pend?{t:`Imunosupresan (${X.names.join(', ')}) — vaksin hidup ditunda; paling cepat ${fmt(X.liveDate)}${X.live.some(l=>!l.known)?' bila obat dihentikan hari ini':''}`,hard:true}:{t:`Imunosupresan dihentikan — vaksin hidup boleh sejak ${fmt(X.liveDate)}; mulai lagi ≥4 mgg pasca vaksin`,hard:false})}
+  if(!live){if(X.rtxWin&&TODAY<X.rtxWin.from&&v.id!=='flu')r.push({t:X.rtxWin.to&&X.rtxWin.to<X.rtxWin.from?`Rituksimab: tidak ada jendela 6 bln sebelum dosis berikut — beri saat RTX jatuh tempo (${fmt(X.rtxWin.next)}), lalu tunda RTX ≥2 mgg`:`Rituksimab: respons ↓ — ideal ≥${fmt(X.rtxWin.from)}${X.rtxWin.to?' dan ≤'+fmt(X.rtxWin.to):''}`,hard:false});
+   if(X.gc20&&v.id!=='flu')r.push({t:'Prednison ≥20 mg/hari: tunda (kecuali influenza) s.d. <20 mg',hard:false});
+   if(X.mtx&&v.id==='flu')r.push({t:'MTX: tahan 2 mgg pasca vaksin bila aktivitas penyakit memungkinkan',hard:false})}
+  if(X.ivigDate&&(v.id==='mmr'||v.id==='var')&&TODAY<X.ivigDate)r.push({t:`IVIG: tunda s.d. ${fmt(X.ivigDate)} (efikasi)`,hard:false})}
+ if(X&&X.status==='rencana'&&X.mulai){r.push(live?{t:`Rencana imunosupresan ${fmt(X.mulai)}: vaksin hidup paling lambat ${fmt(addDays(X.mulai,-28))}`+(addDays(X.mulai,-28)<TODAY?' — sudah terlewat: tunda mulai terapi bila memungkinkan, atau jangan beri vaksin hidup':''),hard:false}:{t:`Berikan sebelum mulai imunosupresan (≤${fmt(addDays(X.mulai,-14))})`,hard:false})}
+ return r}
+function lastLiveOther(p,vid){let m=null;(p.history||[]).forEach(h=>{if(h.vid!==vid&&h.tgl&&isLiveDose(h)){const d=parseD(h.tgl);if(!m||d>m)m=d}});return m}
+function statusOf(it){if(it.kiHard)return 'ki';if(it.kind==='belum')return 'belum';const d=diffDays(it.due,TODAY);if(d<-30)return 'terlambat';if(d<=0)return 'jatuh';if(d<=30)return 'segera';return 'datang'}
+function nextFor(p,v){
+ const doses=dosesOf(p,v.id);let it;
+ if(v.custom){it=v.custom(p,doses);if(it.done)return {done:true,doses}}
+ else if(!doses.length){const ind=v.ind?v.ind(p):null;if(!ind)return null;it={kind:'belum',label:'Dosis 1',due:TODAY,min:TODAY,level:ind.level,ket:ind.why}}
+ else{const s=v.seri(p,doses),n=doses.length;
+  if(n<s.n){const last=doses[n-1].d,iv=s.iv[n-1]||{min:28,rec:28};let min=addDays(last,iv.min),due=addDays(last,iv.rec);if(iv.fromFirst){min=maxD(min,addDays(doses[0].d,iv.fromFirst));due=maxD(due,min)}
+   it={kind:'seri',label:`Dosis ${n+1} dari ${s.n}`+(s.nama?` · ${s.nama}`:''),due,min,level:'rek',ket:s.ket||''}}
+  else{const b=v.booster(p,doses);if(!b)return {done:true,doses};const last=doses[n-1].d;const due=b.days?addDays(last,b.days):addYears(last,b.years);
+   it={kind:'booster',label:b.label||'Booster',due,min:b.minDays?addDays(last,b.minDays):due,level:b.level||'rek',ket:b.ket||''}}}
+ it.vid=v.id;it.pid=p.id;it.doses=doses;it.ki=kiFor(p,v);it.kiHard=it.ki.some(k=>k.hard);
+ const liveThis=v.id==='je'?(doses[0]?isLiveDose(doses[0]):true):v.live;
+ if(liveThis){const ll=lastLiveOther(p,v.id);if(ll){const m=addDays(ll,28);if(m>it.min&&diffDays(it.min,ll)!==0){it.min=m;if(it.due<m)it.due=m;it.ket=(it.ket?it.ket+' · ':'')+'Jarak ≥28 hari dari vaksin hidup lain ('+fmt(ll)+')'}}}
+ if(it.kind==='belum'&&it.due<it.min)it.due=it.min;
+ it.status=statusOf(it);return it}
+function planItems(p){const out=[];(p.plans||[]).forEach(pl=>(pl.items||[]).forEach(x=>{if(!x.done)out.push({kind:'rencana',pid:p.id,vid:x.vid,planId:pl.id,itemId:x.id,label:`${x.label} · rencana ${pl.tujuan}`,due:parseD(x.tgl),min:parseD(x.tgl),level:'rek',ket:x.ket||'',ki:kiFor(p,VX[x.vid]),get status(){const d=diffDays(this.due,TODAY);return d<-30?'terlambat':d<=0?'jatuh':d<=30?'segera':'datang'}})}));return out}
+function allItems(p){const plans=planItems(p);const planned=new Set(plans.map(x=>x.vid));const out=[...plans];VAX.forEach(v=>{if(planned.has(v.id))return;const it=nextFor(p,v);if(it&&!it.done)out.push(it)});return out}
+const STAT={terlambat:['Terlambat','danger'],jatuh:['Jatuh tempo','warn'],segera:['≤30 hari','warn'],datang:['Akan datang','info'],belum:['Belum pernah','accent'],ki:['Kontraindikasi','danger']};
+
+/* ============ Storage ============ */
+const LS='vaksindewasa.v1';
+const S={patients:{},custom:[],form:{},mode:'memori',hideDemo:false,tab:'pengingat',sel:null,filter:'semua'};
+function lsLoad(){try{const r=localStorage.getItem(LS);if(r){const o=JSON.parse(r);S.patients=o.patients||{};S.custom=o.custom||[];S.form=o.form||{};S.hideDemo=!!o.hideDemo;S.lastExport=o.lastExport||'';S.mode='perangkat'}}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({patients:S.patients,custom:S.custom,form:S.form,hideDemo:S.hideDemo,lastExport:S.lastExport||''}));if(S.mode==='memori')S.mode='perangkat'}catch(e){}}
+let COL=null;const chains={};
+function dbWrite(key,data){if(!COL)return;const prev=chains[key]||Promise.resolve();chains[key]=prev.catch(()=>{}).then(()=>data===null?COL.doc(key).delete():COL.doc(key).set(data)).catch(e=>{toast('Gagal simpan ke akun ('+((e&&e.code)||'error')+') — tersimpan di perangkat')})}
+function savePatient(p){p.updated=new Date().toISOString();S.patients[p.id]=p;lsSave();dbWrite('pt_'+p.id,JSON.parse(JSON.stringify(p)));render()}
+function deletePatient(id){delete S.patients[id];lsSave();dbWrite('pt_'+id,null);if(S.sel===id)S.sel=null;render()}
+function saveCustom(){lsSave();dbWrite('meta',{custom:S.custom,form:S.form});render()}
+function setStore(){const t={akun:['Tersimpan privat di akun Anda','ok'],perangkat:['Tersimpan di browser ini — ekspor rutin','warn'],memori:['Belum tersimpan (sesi ini saja)','warn']}[S.mode];$('#storeTxt').textContent=t[0];$('#storeDot').className='dot '+t[1]}
+async function initDb(){try{if(!window.claude||!window.claude.use)return;const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);if(!db||!user)return;const id=await user.id();if(!id)return;
+ COL=db.collection('data/users/'+id);let confirmed=false;const timer=setTimeout(()=>{if(!confirmed)toast('Penyimpanan akun belum terjangkau — memakai data perangkat')},10000);
+ COL.onSnapshot(snap=>{const pts={};let custom=null;snap.docs.forEach(d=>{const x=d.data();if(!x)return;if(d.id.startsWith('pt_')&&x.id)pts[x.id]=x;else if(d.id==='meta'){custom=x.custom||[];if(x.form)S.form=x.form}});
+  if(!confirmed){if(snap.metadata.fromCache)return;confirmed=true;clearTimeout(timer);
+   if(snap.empty&&(Object.keys(S.patients).length||S.custom.length)){Object.values(S.patients).forEach(p=>dbWrite('pt_'+p.id,JSON.parse(JSON.stringify(p))));if(S.custom.length||Object.keys(S.form).length)dbWrite('meta',{custom:S.custom,form:S.form});S.mode='akun';setStore();return}}
+  S.patients=pts;if(custom)S.custom=custom;S.mode='akun';lsSave();S.mode='akun';render()},
+ e=>{clearTimeout(timer);toast('Penyimpanan akun tidak tersedia — memakai data perangkat')})}catch(e){}}
+
+/* Demo data (not saved) */
+function demoPatients(){const y=n=>iso(addYears(TODAY,-n));const d=n=>iso(addDays(TODAY,n));
+ return {
+ demo1:{id:'demo1',demo:true,nama:'CONTOH — Ny. R',rm:'00-12-34',dob:y(62),jk:'P',hp:'081200000000',flags:{dm:true,ckd:true},history:[
+  {id:'a1',vid:'flu',produk:'Vaxigrip (TIV) — trivalen split, Sanofi',tgl:d(-400)},{id:'a2',vid:'pneumo',produk:'Prevenar 13 (PCV13) — Pfizer',tgl:d(-420)},
+  {id:'a3',vid:'hepb',produk:'Engerix-B 20 µg — GSK',skema:'standar',tgl:d(-100)},{id:'a4',vid:'hepb',produk:'Engerix-B 20 µg — GSK',tgl:d(-68)},
+  {id:'a5',vid:'zoster',produk:'Shingrix (RZV) — GSK',tgl:d(-50)}],plans:[]},
+ demo2:{id:'demo2',demo:true,nama:'CONTOH — Tn. A (umrah)',rm:'00-56-78',dob:y(34),jk:'L',hp:'081300000000',flags:{},history:[
+  {id:'b1',vid:'td',produk:'Td Bio Farma (Td)',skema:'booster',tgl:d(-4200)},{id:'b2',vid:'menacwy',produk:'Nimenrix (konjugat) — Pfizer',tgl:d(-1800)},
+  {id:'b3',vid:'tifoid',produk:'Typhim Vi (Vi-PS) — Sanofi',tgl:d(-1150)}],plans:[]}}}
+function patients(){const real=Object.values(S.patients);if(real.length||S.hideDemo)return real;return Object.values(demoPatients())}
+function getP(id){return S.patients[id]||(demoPatients()[id])}
+function guardDemo(p){if(p&&p.demo){toast('Data contoh tidak disimpan — tambahkan pasien baru');return true}return false}
+
+/* ============ Rendering ============ */
+function pill(st){const s=STAT[st];return `<span class="pill ${s[1]}">${s[0]}</span>`}
+function itemRow(it,p,showName){const v=VX[it.vid],s=STAT[it.status]||STAT.datang;const lastProd=it.doses&&it.doses.length?it.doses[it.doses.length-1].produk:'';
+ const lvl=it.kind==='belum'&&it.level==='pert'?'<span class="pill">Pertimbangkan</span>':'';
+ const ki=(it.ki||[]).map(k=>`<span class="pill ${k.hard?'danger':'warn'}">${esc(k.t)}</span>`).join(' ');
+ const dateTxt=it.kind==='belum'?'Bisa diberikan sekarang':`${fmt(it.due)} <span class="muted">(${rel(it.due)})</span>`+(it.min&&diffDays(it.due,it.min)>0?` · paling cepat ${fmt(it.min)}`:'');
+ return `<div class="item"><span class="stripe ${s[1]}"></span><div>
+  <div class="row" style="gap:6px"><span class="t">${showName?esc(p.nama)+' · ':''}${esc(v.nama)}</span>${pill(it.status)}${lvl}</div>
+  <div class="meta">${esc(it.label)} — ${dateTxt}</div>
+  ${it.ket?`<div class="meta">${esc(it.ket)}</div>`:''}
+  ${lastProd&&it.kind!=='belum'?`<div class="meta">Sebelumnya: ${esc(lastProd)} · <a href="#" data-act="sub" data-vid="${v.id}">opsi pengganti</a></div>`:''}
+  ${ki?`<div class="row" style="gap:4px;margin-top:4px">${ki}</div>`:''}
+ </div><div class="acts">
+  <button class="btn" data-act="give" data-pid="${p.id}" data-vid="${v.id}" ${it.itemId?`data-plan="${it.planId}" data-item="${it.itemId}"`:''} ${it.kind==='seri'||it.kind==='booster'?`data-skema="${esc(it.doses&&it.doses[0]&&it.doses[0].skema||'')}"`:''}>Catat diberikan</button>
+  ${it.kind!=='belum'?`<button class="btn ghost" data-act="wa" data-pid="${p.id}" data-vid="${v.id}" data-due="${iso(it.due)}" data-label="${esc(it.label)}">Pesan WA</button>`:''}
+ </div></div>`}
+
+function renderPengingat(){const ps=patients();const all=[];ps.forEach(p=>allItems(p).forEach(it=>all.push([it,p])));
+ const by=k=>all.filter(([it])=>it.status===k);
+ const ter=by('terlambat'),jat=[...by('jatuh'),...by('segera')],bel=all.filter(([it])=>it.status==='belum'&&it.level==='rek'),pert=all.filter(([it])=>it.status==='belum'&&it.level==='pert'),dat=by('datang').sort((a,b)=>a[0].due-b[0].due),ki=by('ki');
+ const cnt=ter.length+jat.length;const c=$('#cntDue');c.hidden=!cnt;c.textContent=cnt;
+ const demo=!Object.keys(S.patients).length&&!S.hideDemo;
+ const sec=(title,arr,note)=>arr.length?`<div class="card"><div class="row"><h3 class="grow">${title} <span class="muted num">${arr.length}</span></h3>${note||''}</div><div class="list">${arr.sort((a,b)=>a[0].due-b[0].due).map(([it,p])=>itemRow(it,p,true)).join('')}</div></div>`:'';
+ $('#v-pengingat').innerHTML=`
+ ${demo?`<div class="banner"><b>Data contoh.</b> Dua pasien CONTOH ditampilkan agar fitur terlihat. Tidak disimpan. <button class="btn primary" data-act="newp">Tambah pasien</button><button class="btn" data-act="hidedemo">Sembunyikan contoh</button></div>`:''}
+ ${(!window.claude&&Object.keys(S.patients).length&&(!S.lastExport||diffDays(TODAY,parseD(S.lastExport))>=7))?`<div class="banner warn"><b>Cadangan data:</b> ${S.lastExport?'ekspor terakhir '+fmt(parseD(S.lastExport)):'belum pernah diekspor'}. Data hanya ada di browser ini. <button class="btn primary" data-act="export">Ekspor JSON sekarang</button></div>`:''}
+ <div class="tiles">
+  <div class="tile danger"><b>${ter.length}</b><span>Terlambat &gt;30 hari</span></div>
+  <div class="tile warn"><b>${jat.length}</b><span>Jatuh tempo / ≤30 hari</span></div>
+  <div class="tile accent"><b>${bel.length}</b><span>Direkomendasikan, belum pernah</span></div>
+  <div class="tile"><b>${dat.length}</b><span>Terjadwal &gt;30 hari</span></div>
+ </div>
+ <div class="row"><button class="btn" data-act="icsall">Unduh kalender (.ics) semua pengingat</button><span class="tiny muted">Impor ke Google/Apple Calendar; alarm 1 hari sebelum.</span></div>
+ ${sec('Terlambat',ter)}${sec('Jatuh tempo & 30 hari ke depan',jat)}${sec('Direkomendasikan — belum pernah',bel)}${sec('Kontraindikasi saat ini',ki)}${sec('Terjadwal',dat)}
+ ${pert.length?`<details class="card"><summary><b>Pertimbangkan (shared decision / bila tanpa bukti imunitas)</b> <span class="muted num">${pert.length}</span></summary><div class="list">${pert.map(([it,p])=>itemRow(it,p,true)).join('')}</div></details>`:''}
+ ${!all.length?'<div class="card"><p class="muted">Belum ada pengingat. Tambahkan pasien dan riwayat vaksin.</p></div>':''}`}
+
+const FLAGS=[['hamil','Hamil'],['menyusui','Menyusui'],['imunokompromais','Imunodefisiensi berat / imunosupresan'],['hiv','HIV'],['cd4lt200','HIV CD4 <200'],['asplenia','Asplenia / sickle cell'],['komplemen','Defisiensi komplemen / eculizumab'],['dm','Diabetes melitus'],['ckd','Penyakit ginjal kronik'],['dialisis','Hemodialisis'],['jantung','Penyakit jantung kronik'],['paru','PPOK/asma/penyakit paru kronik'],['hati','Penyakit hati kronik'],['perokok','Perokok'],['alkohol','Alkoholisme'],['csf','Kebocoran LCS / implan koklea'],['nakes','Tenaga kesehatan'],['lab','Pekerja lab mikrobiologi'],['risikoRabies','Risiko rabies (dokter hewan/lapangan)'],['pekerjaMakanan','Penjamah makanan'],['msm','LSL/MSM'],['riwayatGBS','Riwayat GBS'],['trombositopenia','Riwayat trombositopenia']];
+
+function renderPasien(){const ps=patients().sort((a,b)=>(a.nama||'').localeCompare(b.nama||''));const q=(S.q||'').toLowerCase();
+ const list=ps.filter(p=>!q||(p.nama||'').toLowerCase().includes(q)||(p.rm||'').toLowerCase().includes(q));
+ if(!S.sel||!getP(S.sel))S.sel=list[0]?list[0].id:null;const p=S.sel?getP(S.sel):null;
+ $('#v-pasien').innerHTML=`<div class="grid2" style="grid-template-columns:minmax(260px,1fr) minmax(300px,2fr)">
+ <div class="card"><div class="row"><h2 class="grow">Pasien</h2><button class="btn primary" data-act="newp">+ Pasien</button></div>
+  <input id="pq" placeholder="Cari nama / No. RM" value="${esc(S.q||'')}">
+  <div class="list">${list.map(x=>{const its=allItems(x);const n=its.filter(i=>['terlambat','jatuh','segera'].includes(i.status)).length;const t=its.filter(i=>i.status==='terlambat').length;
+   return `<div class="item" style="cursor:pointer" data-act="selp" data-pid="${x.id}"><span class="stripe ${t?'danger':n?'warn':'ok'}"></span><div><div class="t">${esc(x.nama)}</div><div class="meta">${esc(x.rm||'—')} · ${ageOf(x)??'?'} th · ${x.jk||''}</div></div><div>${n?`<span class="pill ${t?'danger':'warn'}">${n} perlu</span>`:''}</div></div>`}).join('')||'<p class="muted small">Belum ada pasien.</p>'}</div>
+  <div class="row tiny"><button class="btn ghost" data-act="export">Ekspor data (JSON)</button><label class="btn ghost" for="impf">Impor JSON</label><input type="file" id="impf" accept="application/json" hidden></div>
+ </div>
+ <div class="card">${p?patientDetail(p):'<p class="muted">Pilih atau tambah pasien.</p>'}</div></div>`;
+ const pq=$('#pq');pq.oninput=()=>{S.q=pq.value;const pos=pq.selectionStart;renderPasien();const n=$('#pq');n.focus();n.setSelectionRange(pos,pos)};
+ $('#impf').onchange=importJson}
+function patientDetail(p){const f=fl(p);const its=allItems(p).sort((a,b)=>({terlambat:0,jatuh:1,segera:2,belum:3,ki:4,datang:5}[a.status]-{terlambat:0,jatuh:1,segera:2,belum:3,ki:4,datang:5}[b.status])||a.due-b.due);
+ const tags=FLAGS.filter(([k])=>f[k]).map(([,t])=>`<span class="pill">${esc(t)}</span>`).join(' ');
+ const hist=(p.history||[]).slice().sort((a,b)=>(b.tgl||'').localeCompare(a.tgl||''));
+ const done=VAX.filter(v=>{const r=nextFor(p,v);return r&&r.done});
+ return `<div class="row"><div class="grow"><h2>${esc(p.nama)}</h2><div class="muted small">${esc(p.rm||'—')} · ${fmt(parseD(p.dob))} (${ageOf(p)??'?'} th) · ${p.jk||''} ${p.hp?'· '+esc(p.hp):''}</div></div>
+  <button class="btn" data-act="editp" data-pid="${p.id}">Ubah</button><button class="btn primary" data-act="give" data-pid="${p.id}">+ Catat vaksin</button></div>
+ ${tags?`<div class="row" style="gap:4px">${tags}</div>`:''}${p.isx&&p.isx.drugs&&p.isx.drugs.length?`<div class="banner warn small"><b>Imunosupresan (${p.isx.status==='rencana'?'rencana mulai '+fmt(parseD(p.isx.mulai)):'aktif'}):</b> ${esc(p.isx.drugs.map(d=>DG[d.k]?DG[d.k].s:d.k).join(', '))} <a href="#" data-act="toks" data-pid="${p.id}">lihat</a></div>`:''}${p.splen?`<div class="banner small"><b>Splenektomi ${esc(p.splen.jenis)}</b> ${p.splen.tgl?fmt(parseD(p.splen.tgl)):''}</div>`:''}${f.anafilaksis?`<div class="banner danger">Riwayat anafilaksis: ${esc(f.anafilaksis)}</div>`:''}
+ <h3>Pengingat &amp; rekomendasi</h3><div class="list">${its.map(it=>itemRow(it,p,false)).join('')||'<p class="muted small">Tidak ada.</p>'}</div>
+ ${done.length?`<div class="small muted">Lengkap: ${done.map(v=>esc(v.nama)).join(', ')}</div>`:''}
+ <div class="row"><button class="btn" data-act="icsp" data-pid="${p.id}">Kalender (.ics) pasien ini</button><button class="btn" data-act="tocatch" data-pid="${p.id}">Rencanakan catch-up</button></div>
+ <h3>Riwayat vaksinasi</h3><div class="tbl-wrap"><table class="hist"><thead><tr><th>Tanggal</th><th>Vaksin</th><th>Produk / skema</th><th>Lot · catatan</th><th></th></tr></thead><tbody>
+ ${hist.map(h=>`<tr><td class="num">${fmt(parseD(h.tgl))}</td><td>${esc(VX[h.vid]?VX[h.vid].nama:h.vid)}</td><td>${esc(h.produk||'')}${h.skema?` <span class="muted tiny">(${esc(h.skema)})</span>`:''}</td><td class="small">${esc(h.lot||'')}${h.cat?' · '+esc(h.cat):''}${h.kipi?`<div><span class="pill warn">KIPI</span> ${esc(h.kipi)}</div>`:''}</td><td><button class="btn ghost" data-act="deld" data-pid="${p.id}" data-hid="${h.id}" aria-label="Hapus">✕</button></td></tr>`).join('')||'<tr><td colspan="5" class="muted">Belum ada riwayat.</td></tr>'}
+ </tbody></table></div>
+ ${(p.plans||[]).length?`<h3>Rencana catch-up</h3>${p.plans.map(pl=>`<div class="small"><b>${esc(pl.tujuan)}</b> — berangkat ${fmt(parseD(pl.berangkat))} · ${pl.items.filter(i=>!i.done).length} dosis tertunda <button class="btn ghost danger" data-act="delplan" data-pid="${p.id}" data-plan="${pl.id}">hapus rencana</button></div>`).join('')}`:''}
+ <div class="row"><button class="btn ghost danger" data-act="delp" data-pid="${p.id}">Hapus pasien</button></div>`}
+
+/* ---- Modals ---- */
+function openModal(html){$('#modal').innerHTML=html;$('#modalBg').classList.add('on');const first=$('#modal').querySelector('input,select,textarea,button');if(first)first.focus()}
+function closeModal(){$('#modalBg').classList.remove('on')}
+$('#modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+function patientForm(p){p=p||{flags:{}};const f=p.flags||{};
+ openModal(`<header><h2>${p.id?'Ubah':'Tambah'} pasien</h2><button class="btn ghost" data-act="close">Tutup</button></header>
+ <form id="pf" class="card" style="border:0;padding:0">
+ <div class="row"><label class="f">Nama<input id="pf_nama" required value="${esc(p.nama||'')}"></label><label class="f">No. RM<input id="pf_rm" value="${esc(p.rm||'')}"></label></div>
+ <div class="row"><label class="f">Tanggal lahir<input id="pf_dob" type="date" required value="${esc(p.dob||'')}"></label><label class="f">Jenis kelamin<select id="pf_jk"><option ${p.jk==='P'?'selected':''}>P</option><option ${p.jk==='L'?'selected':''}>L</option></select></label><label class="f">No. HP (WA)<input id="pf_hp" inputmode="tel" value="${esc(p.hp||'')}"></label></div>
+ <div class="small muted" style="font-weight:600">Kondisi / indikasi</div>
+ <div class="checks">${FLAGS.map(([k,t])=>`<label><input type="checkbox" id="pf_${k}" ${f[k]?'checked':''}>${esc(t)}</label>`).join('')}</div>
+ <label class="f">Riwayat anafilaksis / alergi berat (komponen)<input id="pf_ana" placeholder="mis. neomisin, gelatin, PEG" value="${esc(f.anafilaksis||'')}"></label>
+ <div class="row"><button class="btn primary" type="submit">Simpan</button></div></form>`);
+ $('#pf').onsubmit=e=>{e.preventDefault();const np={...p,id:p.id&&!p.demo?p.id:uid(),nama:$('#pf_nama').value.trim(),rm:$('#pf_rm').value.trim(),dob:$('#pf_dob').value,jk:$('#pf_jk').value,hp:$('#pf_hp').value.trim(),flags:{},history:p.demo?[]:(p.history||[]),plans:p.demo?[]:(p.plans||[])};delete np.demo;
+  FLAGS.forEach(([k])=>{if($('#pf_'+k).checked)np.flags[k]=true});const an=$('#pf_ana').value.trim();if(an)np.flags.anafilaksis=an;
+  if(!np.nama||!np.dob){toast('Nama dan tanggal lahir wajib');return}S.sel=np.id;closeModal();savePatient(np);toast('Pasien disimpan')}}
+
+function doseForm(pid,vid,opt){const p=getP(pid);if(!p)return;opt=opt||{};
+ openModal(`<header><h2>Catat vaksin — ${esc(p.nama)}</h2><button class="btn ghost" data-act="close">Tutup</button></header>
+ <form id="df" class="card" style="border:0;padding:0">
+ <div class="row"><label class="f">Vaksin<select id="df_v">${VAX.map(v=>`<option value="${v.id}" ${v.id===vid?'selected':''}>${esc(v.nama)}</option>`).join('')}</select></label>
+ <label class="f">Tanggal diberikan<input type="date" id="df_t" value="${iso(TODAY)}" required></label></div>
+ <div class="row"><label class="f">Produk<select id="df_p"></select><input id="df_px" placeholder="Nama produk — tipe — produsen" style="display:none"></label><label class="f" id="df_skw">Skema<select id="df_s"></select></label></div>
+ <div class="row"><label class="f">No. batch/lot<input id="df_l"></label><label class="f">Catatan (lokasi suntik, dll.)<input id="df_c"></label></div>
+ <div id="df_warn"></div>
+ <div class="row"><button class="btn primary" type="submit">Simpan dosis</button></div></form>`);
+ const upd=()=>{const v=VX[$('#df_v').value];const prev=dosesOf(p,v.id);
+  $('#df_p').innerHTML=prods(v).map(x=>`<option ${prev.length&&prev[prev.length-1].produk===x?'selected':''}>${esc(x)}</option>`).join('');
+  const sk=v.skema&&!prev.length;$('#df_skw').style.display=sk?'':'none';
+  if(sk){const f=fl(p);let def=v.skema[0].k;if(v.id==='hepb'&&f.dialisis)def='dialisis';if(v.id==='mmr'&&f.nakes)def='2';if(v.id==='td'&&opt.skema)def=opt.skema;$('#df_s').innerHTML=v.skema.map(s=>`<option value="${s.k}" ${s.k===def?'selected':''}>${esc(s.t)}</option>`).join('')}
+  warn()};
+ const warn=()=>{const v=VX[$('#df_v').value];const d=parseD($('#df_t').value);const out=[];if(!d){$('#df_warn').innerHTML='';return}
+  const it=nextFor(p,v);if(it&&!it.done&&it.kind!=='belum'&&it.min&&d<addDays(it.min,-4))out.push(['danger',`Interval kurang dari minimal (paling cepat ${fmt(it.min)}). Dosis &gt;4 hari lebih awal dianggap tidak valid dan perlu diulang.`]);
+  if(it&&it.done)out.push(['warn','Seri vaksin ini sudah lengkap menurut riwayat — pastikan indikasi dosis tambahan.']);
+  const prodLive=v.id==='je'?$('#df_p').value.startsWith('Imojev'):v.id==='polio'?/OPV/.test($('#df_p').value):v.live;
+  if(prodLive){(p.history||[]).forEach(h=>{if(h.vid!==v.id&&isLiveDose(h)){const g=Math.abs(diffDays(d,parseD(h.tgl)));if(g>0&&g<28)out.push(['danger',`Vaksin hidup lain (${esc(VX[h.vid].nama)}) ${g} hari dari tanggal ini — beri bersamaan atau jarak ≥28 hari.`])}})}
+  kiFor(p,v).forEach(k=>out.push([k.hard?'danger':'warn',esc(k.t)]));
+  $('#df_warn').innerHTML=out.map(([c,t])=>`<div class="banner ${c}">${t}</div>`).join('')};
+ $('#df_v').onchange=upd;$('#df_t').onchange=warn;$('#df_p').onchange=()=>{$('#df_px').style.display=$('#df_p').value==='Lainnya'?'':'none';warn()};upd();
+ $('#df').onsubmit=e=>{e.preventDefault();if(guardDemo(p)){closeModal();return}const v=VX[$('#df_v').value];const prev=dosesOf(p,v.id);
+  const h={id:uid(),vid:v.id,tgl:$('#df_t').value,produk:$('#df_p').value==='Lainnya'&&$('#df_px').value.trim()?$('#df_px').value.trim():$('#df_p').value,lot:$('#df_l').value.trim(),cat:$('#df_c').value.trim()};
+  if(v.skema&&!prev.length)h.skema=$('#df_s').value;
+  const np=JSON.parse(JSON.stringify(p));np.history=np.history||[];np.history.push(h);
+  if(opt.plan){const pl=(np.plans||[]).find(x=>x.id===opt.plan);if(pl){const x=pl.items.find(i=>i.id===opt.item);if(x)x.done=true}}
+  else{(np.plans||[]).forEach(pl=>{const x=pl.items.find(i=>i.vid===v.id&&!i.done);if(x&&Math.abs(diffDays(parseD(x.tgl),parseD(h.tgl)))<=60)x.done=true})}
+  closeModal();savePatient(np);toast('Dosis tercatat — pengingat berikutnya dihitung otomatis')}}
+
+function subModal(vid){const v=VX[vid];openModal(`<header><h2>Opsi pengganti — ${esc(v.nama)}</h2><button class="btn ghost" data-act="close">Tutup</button></header><p>${esc(v.pengganti)}</p><p class="small muted">Produk tersedia di klinik: ${prods(v).filter(x=>x!=='Lainnya').map(esc).join(', ')}</p>`)}
+
+function textModal(title,text,note){openModal(`<header><h2>${esc(title)}</h2><button class="btn ghost" data-act="close">Tutup</button></header>${note?`<p class="small muted">${note}</p>`:''}<textarea id="tm" style="min-height:220px" class="mono small">${esc(text)}</textarea><div class="row"><button class="btn primary" data-act="copytm">Salin</button></div>`)}
+
+/* ---- WA, ICS, export ---- */
+function waText(p,vid,due,label){return `Yth. ${p.jk==='L'?'Bapak':'Ibu'} ${p.nama.replace(/^CONTOH — /,'')},\nIni pengingat jadwal vaksinasi Anda:\n• ${VX[vid].nama} — ${label}\n• Jadwal: ${fmt(parseD(due))}\nMohon konfirmasi kehadiran ke Poli Vaksinasi. Bila sedang demam/sakit, hamil, atau baru mendapat vaksin lain, mohon informasikan sebelumnya. Terima kasih.`}
+function waNum(hp){let n=(hp||'').replace(/\D/g,'');if(n.startsWith('0'))n='62'+n.slice(1);return n}
+function icsFor(list){const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Vaksinasi Dewasa//ID','CALSCALE:GREGORIAN'];const stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+ list.forEach(([it,p])=>{if(it.kind==='belum')return;const d=iso(it.due).replace(/-/g,''),e=iso(addDays(it.due,1)).replace(/-/g,'');const t=s=>String(s).replace(/[,;\\]/g,m=>'\\'+m).replace(/\n/g,'\\n');
+  L.push('BEGIN:VEVENT','UID:'+p.id+'-'+it.vid+'-'+d+'@vaksindewasa','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+e,'SUMMARY:'+t(`Vaksin ${VX[it.vid].nama} — ${p.nama}`),'DESCRIPTION:'+t(`${it.label}. ${it.ket||''} Paling cepat: ${fmt(it.min)}. RM ${p.rm||'-'}`),'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Pengingat vaksin','END:VALARM','END:VEVENT')});
+ L.push('END:VCALENDAR');return L.join('\r\n')}
+async function saveFile(name,text,mime){if(!window.claude){try{const u=URL.createObjectURL(new Blob([text],{type:mime}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);if(/\.json$/.test(name)){S.lastExport=iso(TODAY);lsSave()}toast('File diunduh: '+name);return}catch(e){}}try{const dl=window.claude&&window.claude.use?await claude.use('downloads'):null;if(dl){try{await dl.save({filename:name,data:new Blob([text],{type:mime})});return}catch(e){if(e&&/declin|cancel|reject/i.test(e.code||e.message||''))return}}}catch(e){}
+ textModal(name,text,'Unduhan tidak tersedia di tampilan ini — salin isi berikut ke file '+esc(name)+'.')}
+function exportJson(){saveFile('vaksinasi-dewasa-'+iso(TODAY)+'.json',JSON.stringify({versi:1,diekspor:new Date().toISOString(),patients:S.patients,custom:S.custom,form:S.form},null,1),'application/json')}
+function importJson(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);const ps=o.patients||{};let n=0;Object.values(ps).forEach(p=>{if(p&&p.id&&p.nama){S.patients[p.id]=p;dbWrite('pt_'+p.id,p);n++}});if(Array.isArray(o.custom))S.custom=o.custom;if(o.form)S.form=o.form;dbWrite('meta',{custom:S.custom,form:S.form});lsSave();render();toast(n+' pasien diimpor')}catch(err){toast('File tidak valid: harus JSON ekspor dari aplikasi ini')}};r.readAsText(file)}
+
+/* ============ Catch-up planner ============ */
+function renderCatchup(){const ps=patients();const sel=S.cuP||'';
+ $('#v-catchup').innerHTML=`<div class="card"><h2>Catch-up mendesak &amp; perjalanan</h2>
+ <p class="small muted">Menyusun jadwal tercepat yang valid (interval minimal, skema akselerasi, jarak vaksin hidup, tenggat sertifikat) sampai tanggal keberangkatan/tenggat dokumen.</p>
+ <div class="row"><label class="f">Pasien<select id="cu_p"><option value="">— tanpa pasien (umum, dewasa 30 th) —</option>${ps.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.nama)}</option>`).join('')}</select></label>
+ <label class="f">Mulai vaksin<input type="date" id="cu_s" value="${S.cuS||iso(TODAY)}"></label><label class="f">Tanggal berangkat / tenggat<input type="date" id="cu_d" value="${S.cuD||iso(addDays(TODAY,30))}"></label></div>
+ <div class="small muted" style="font-weight:600">Tujuan / kebutuhan</div>
+ <div class="checks">${Object.entries(DEST).map(([k,d])=>`<label><input type="checkbox" class="cu_t" value="${k}" ${(S.cuT||['umroh']).includes(k)?'checked':''}>${esc(d.t)}</label>`).join('')}</div>
+ <div class="small muted" style="font-weight:600">Tambahan manual</div>
+ <div class="checks">${VAX.map(v=>`<label><input type="checkbox" class="cu_x" value="${v.id}" ${(S.cuX||[]).includes(v.id)?'checked':''}>${esc(v.nama)}</label>`).join('')}</div>
+ </div><div id="cu_out"></div>`;
+ const go=()=>{S.cuP=$('#cu_p').value;S.cuS=$('#cu_s').value;S.cuD=$('#cu_d').value;S.cuT=[...document.querySelectorAll('.cu_t:checked')].map(x=>x.value);S.cuX=[...document.querySelectorAll('.cu_x:checked')].map(x=>x.value);planOut()};
+ $('#v-catchup').querySelectorAll('input,select').forEach(x=>x.onchange=go);planOut()}
+function buildPlan(){const p=S.cuP?getP(S.cuP):{id:'',nama:'Umum',dob:iso(addYears(TODAY,-30)),flags:{},history:[]};const start=parseD(S.cuS)||TODAY,dep=parseD(S.cuD);if(!dep)return null;
+ const avail=diffDays(dep,start);const want=new Map();
+ (S.cuT||[]).forEach(k=>DEST[k].items.forEach(([vid,lvl,note,valid])=>{const o=want.get(vid);const rank={wajib:0,cek:1,anjuran:2};if(!o||rank[lvl]<rank[o.lvl])want.set(vid,{lvl,note,valid,src:DEST[k].t});else if(o&&valid&&!o.valid)o.valid=valid}));
+ (S.cuX||[]).forEach(vid=>{if(!want.has(vid))want.set(vid,{lvl:'anjuran',note:'Ditambahkan manual',src:'manual'})});
+ const rows=[];let liveDays=[];
+ want.forEach((w,vid)=>{const v=VX[vid];const doses=dosesOf(p,vid);const nx=nextFor(p,v);const ki=kiFor(p,v);
+  let covered=false,why='';
+  if(doses.length){const last=doses[doses.length-1].d;
+   if(w.valid){covered=diffDays(dep,last)<=w.valid&&diffDays(dep,last)>=v.lead;why=covered?`Dosis terakhir ${fmt(last)} masih dalam ${w.valid} hari`:`Dosis terakhir ${fmt(last)} di luar jendela ${w.valid} hari`}
+   else if(nx&&nx.done){covered=true;why='Seri lengkap'}
+   else if(nx&&nx.kind==='booster'&&nx.due>dep){covered=true;why=`Berlaku s.d. ${fmt(nx.due)}`}}
+  if(covered){rows.push({vid,w,covered:true,why,ki});return}
+  // continue existing incomplete series from next min date, otherwise new accelerated schedule
+  let sched,nama='';
+  if(nx&&nx.kind==='seri'){const s=v.seri(p,doses);sched=[];let cur=maxD(nx.min,start);sched.push(cur);for(let i=doses.length;i<s.n-1;i++){cur=addDays(cur,s.iv[i].min);sched.push(cur)}nama='lanjutan seri ('+doses.length+' dosis tercatat)'}
+  else{const a=v.acc(p,avail);nama=a.nama||'';sched=a.s.map(o=>addDays(start,o))}
+  const live=v.live;
+  rows.push({vid,w,sched,nama,live,ki,deadline:addDays(dep,-v.lead)})});
+ // live-vaccine spacing: all live first doses on the same earliest day
+ const liveRows=rows.filter(r=>r.sched&&r.live);if(liveRows.length>1){const d0=liveRows.reduce((m,r)=>r.sched[0]<m?r.sched[0]:m,liveRows[0].sched[0]);liveRows.forEach(r=>{const sh=diffDays(r.sched[0],d0);if(sh>0&&sh<28){r.sched=r.sched.map(d=>addDays(d,-sh));if(r.sched[0]<start)r.sched=r.sched.map(d=>addDays(d,diffDays(start,r.sched[0])))}})}
+ // past live doses in history within 28 days
+ rows.forEach(r=>{if(!r.sched||!r.live)return;const ll=lastLiveOther(p,r.vid);if(ll){const m=addDays(ll,28);if(r.sched[0]<m&&diffDays(r.sched[0],ll)!==0){const sh=diffDays(m,r.sched[0]);r.sched=r.sched.map(d=>addDays(d,sh));r.liveNote='Digeser: jarak 28 hari dari vaksin hidup '+fmt(ll)}}});
+ return {p,start,dep,avail,rows}}
+function planOut(){const P=buildPlan();const o=$('#cu_out');if(!P){o.innerHTML='';return}
+ if(P.avail<0){o.innerHTML='<div class="banner danger">Tanggal berangkat sebelum tanggal mulai.</div>';return}
+ const rk={wajib:0,cek:1,anjuran:2};const rows=P.rows.sort((a,b)=>rk[a.w.lvl]-rk[b.w.lvl]);
+ const html=rows.map(r=>{const v=VX[r.vid];const lv=`<span class="pill ${r.w.lvl==='wajib'?'danger':r.w.lvl==='cek'?'warn':''}">${r.w.lvl==='cek'?'cek syarat':r.w.lvl}</span>`;
+  const ki=r.ki.map(k=>`<span class="pill ${k.hard?'danger':'warn'}">${esc(k.t)}</span>`).join(' ');
+  if(r.covered)return `<tr><td><b>${esc(v.nama)}</b> ${lv}<div class="tiny muted">${esc(r.w.note||'')}</div></td><td colspan="2"><span class="pill ok">Sudah terlindungi</span> <span class="small">${esc(r.why)}</span></td></tr>`;
+  const fits=r.sched.map(d=>d<=r.deadline);const first=fits[0];const all=fits.every(Boolean);
+  const st=!first?`<span class="pill danger">Tidak sempat</span>`:all?`<span class="pill ok">Tuntas sebelum berangkat</span>`:`<span class="pill warn">Sebagian dosis setelah kembali</span>`;
+  return `<tr><td><b>${esc(v.nama)}</b> ${lv}<div class="tiny muted">${esc(r.w.note||'')}${r.nama?' · skema '+esc(r.nama):''}</div>${ki?`<div>${ki}</div>`:''}${r.liveNote?`<div class="tiny muted">${esc(r.liveNote)}</div>`:''}</td>
+  <td class="num small">${r.sched.map((d,i)=>`D${i+1}: ${fmt(d)}${fits[i]?'':' <span class="pill warn">pasca</span>'}`).join('<br>')}</td>
+  <td>${st}<div class="tiny muted">Tenggat: ${fmt(r.deadline)}${v.lead?` (≥${v.lead} hari sebelum)`:''}</div>${!first&&(r.vid==='menacwy'||r.vid==='yf')?'<div class="tiny" style="color:var(--danger)">Sertifikat belum berlaku saat tiba — pertimbangkan menunda keberangkatan.</div>':''}</td></tr>`}).join('');
+ const notes=[...new Set((S.cuT||[]).flatMap(k=>DEST[k].notes))];
+ const liveCount=rows.filter(r=>r.sched&&r.live).length;
+ o.innerHTML=`<div class="card"><div class="row"><h3 class="grow">Jadwal usulan · ${P.avail} hari tersedia</h3>
+  ${S.cuP&&!getP(S.cuP).demo?'<button class="btn primary" data-act="saveplan">Simpan ke pasien (jadi pengingat)</button>':''}<button class="btn" data-act="copyplan">Salin ringkasan</button></div>
+ <div class="tbl-wrap"><table><thead><tr><th>Vaksin</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${html||'<tr><td colspan="3" class="muted">Pilih tujuan atau vaksin.</td></tr>'}</tbody></table></div>
+ <div class="small"><b>Aturan yang diterapkan:</b> beberapa vaksin inaktif boleh di hari yang sama (lokasi berbeda); vaksin hidup diberikan bersamaan atau jarak ≥28 hari${liveCount>1?' (dijadwalkan pada hari yang sama)':''}; YF + MMR di hari sama dapat menurunkan respons — bila waktu cukup, pisahkan 28 hari; skema akselerasi dipakai bila waktu &lt; standar.</div>
+ ${notes.map(n=>`<div class="banner warn small">${esc(n)}</div>`).join('')}</div>`;
+ S._plan=P}
+function planSummary(P){return `Rencana vaksinasi ${P.p.nama} — berangkat ${fmt(P.dep)}\n`+P.rows.map(r=>`• ${VX[r.vid].nama}: `+(r.covered?'sudah terlindungi ('+r.why+')':r.sched.map((d,i)=>`D${i+1} ${fmt(d)}`).join(', '))).join('\n')}
+function savePlan(){const P=S._plan;if(!P||!S.cuP)return;const p=getP(S.cuP);if(guardDemo(p))return;const np=JSON.parse(JSON.stringify(p));np.plans=np.plans||[];
+ const tujuan=(S.cuT||[]).map(k=>DEST[k].t.split(' (')[0]).join(', ')||'manual';
+ const items=[];P.rows.forEach(r=>{if(r.covered)return;const prev=dosesOf(p,r.vid).length;r.sched.forEach((d,i)=>items.push({id:uid(),vid:r.vid,tgl:iso(d),label:`Dosis ${prev+i+1}${r.nama?' ('+r.nama+')':''}`,ket:r.w.note||''}))});
+ np.plans.push({id:uid(),tujuan,berangkat:iso(P.dep),items});savePatient(np);toast(items.length+' dosis terjadwal masuk pengingat')}
+
+/* ============ Kondisi khusus: imunosupresan & splenektomi ============ */
+const DRUGS=[
+ {k:'gc',s:'Glukokortikoid',t:'Glukokortikoid sistemik',inp:'dose',unit:'mg/hari ekuiv. prednison',daily:true},
+ {k:'mtx',s:'Metotreksat',t:'Metotreksat',inp:'dose',unit:'mg/minggu',daily:true},
+ {k:'aza',s:'Azatioprin',t:'Azatioprin',inp:'dose',unit:'mg/hari',daily:true},
+ {k:'lef',s:'Leflunomid',t:'Leflunomid',before:28,daily:true},
+ {k:'mmf',s:'Mikofenolat',t:'Mikofenolat (MMF/MPA)',before:28,daily:true},
+ {k:'cni',s:'Siklosporin/takrolimus',t:'Inhibitor kalsineurin (siklosporin, takrolimus)',before:28,daily:true},
+ {k:'cycpo',s:'Siklofosfamid oral',t:'Siklofosfamid oral',before:28,daily:true},
+ {k:'cyciv',s:'Siklofosfamid IV',t:'Siklofosfamid IV',inp:'int',defInt:28},
+ {k:'jak',s:'JAK inhibitor',t:'JAK inhibitor (tofasitinib, baricitinib, upadasitinib)',before:7,daily:true},
+ {k:'tnf',s:'Anti-TNF',t:'Anti-TNF (adalimumab, infliximab, etanercept, golimumab, certolizumab)',inp:'int',defInt:14},
+ {k:'il6',s:'Anti-IL-6R',t:'Anti-IL-6R (tocilizumab, sarilumab)',inp:'int',defInt:28},
+ {k:'il17',s:'Anti-IL-17/IL-12/23/IL-23',t:'Anti-IL-17 / IL-12/23 / IL-23 (sekukinumab, ustekinumab, guselkumab, risankizumab)',inp:'int',defInt:28},
+ {k:'il1',s:'Anti-IL-1',t:'Anti-IL-1 (anakinra, kanakinumab)',inp:'int',defInt:28},
+ {k:'aba',s:'Abatasept',t:'Abatasept',inp:'int',defInt:28},
+ {k:'bel',s:'Belimumab/anifrolumab',t:'Belimumab / anifrolumab',inp:'int',defInt:28},
+ {k:'rtx',s:'Rituksimab/anti-CD20',t:'Rituksimab / anti-CD20',inp:'rtx'},
+ {k:'ivig',s:'IVIG',t:'IVIG',inp:'ivig'},
+ {k:'hcq',s:'HCQ/SSZ',t:'Hidroksiklorokuin / sulfasalazin',none:true}
+];
+const DG=Object.fromEntries(DRUGS.map(d=>[d.k,d]));
+function ivigMonths(g){return g<=0.5?8:g<=1?10:11}
+function isxInfo(p){const x=p&&p.isx;if(!x||!x.drugs||!x.drugs.length)return null;const bb=parseFloat(x.bb)||0;
+ const out={status:x.status,mulai:parseD(x.mulai),high:false,any:false,live:[],level:[],liveDate:null,rtxWin:null,gc20:false,mtx:false,ivigDate:null,ivigM:0,names:[],low:[]};
+ x.drugs.forEach(d=>{const g=DG[d.k];if(!g)return;out.names.push(g.s);const last=parseD(d.last);let hold=null,lvl='tinggi';
+  if(g.none){lvl='tidak imunosupresif — tidak perlu jeda'}
+  else if(g.k==='gc'){const ds=parseFloat(d.dose)||0;out.gc20=ds>=20;lvl=ds>=20?`tinggi (${ds} mg/hari ≥20)`:`rendah (${ds} mg/hari <20)`;if(ds>=20)out.high=true;else out.low.push('prednison <20 mg/hari');hold=28}
+  else if(g.k==='mtx'){const ds=parseFloat(d.dose)||0;out.mtx=true;if(bb&&ds){const r=ds/bb;lvl=`${r<=0.4?'rendah':'tinggi'} (${ds} mg ÷ ${bb} kg = ${r.toFixed(2)} mg/kg/mgg; ambang 0,4)`;if(r>0.4)out.high=true;else out.low.push('MTX ≤0,4 mg/kg/mgg')}else lvl='isi dosis & BB (ambang 0,4 mg/kg/mgg)';hold=28}
+  else if(g.k==='aza'){const ds=parseFloat(d.dose)||0;if(bb&&ds){const r=ds/bb;lvl=`${r<=3?'rendah':'tinggi'} (${ds} mg ÷ ${bb} kg = ${r.toFixed(2)} mg/kg/hari; ambang 3)`;if(r>3)out.high=true;else out.low.push('AZA ≤3 mg/kg/hari')}else lvl='isi dosis & BB (ambang 3 mg/kg/hari)';hold=28}
+  else if(g.k==='rtx'){out.high=true;hold=182;lvl='tinggi (deplesi sel B)';if(last)out.rtxWin={from:addDays(last,182),to:d.next?addDays(parseD(d.next),-28):null,next:parseD(d.next)}}
+  else if(g.k==='ivig'){const gk=parseFloat(d.dose)||0.4;out.ivigM=ivigMonths(gk);lvl=`bukan imunosupresan; ${gk} g/kg → tunda MMR/varisela ${out.ivigM} bln (efikasi)`;if(last)out.ivigDate=addMonths(last,out.ivigM)}
+  else{out.high=true;hold=g.inp==='int'?(parseInt(d.int)||g.defInt):g.before}
+  if(!g.none&&g.k!=='ivig')out.any=true;
+  if(hold!=null){const until=addDays(last||TODAY,hold);out.live.push({g,d,hold,until,known:!!last});if(!out.liveDate||until>out.liveDate)out.liveDate=until}
+  out.level.push({g,lvl})});
+ return out}
+
+const SPLEN_V=['pneumo','menacwy','menb','hib','flu','covid'];
+function splenPlan(){const p=S.spP?getP(S.spP):null;if(!p)return {err:'Pilih pasien'};const jenis=S.spJ||'elektif';const op=parseD(S.spT);const start0=parseD(S.spS)||TODAY;
+ if(jenis!=='sudah'&&!op)return {err:'Isi tanggal operasi'};
+ const tmp=JSON.parse(JSON.stringify(p));tmp.flags={...(tmp.flags||{}),asplenia:true};tmp.history=(tmp.history||[]).filter(h=>!(h.vid==='menacwy'&&/polisakarida/i.test(h.produk||'')));
+ let start=start0,deadline=null;
+ if(jenis==='elektif')deadline=addDays(op,-14);
+ if(jenis==='emergensi')start=maxD(addDays(op,14),start0);
+ const rows=[];
+ SPLEN_V.forEach(vid=>{const v=VX[vid];if(v.tidakTersedia&&!dosesOf(tmp,vid).length){rows.push({vid,na:true});return}const it=nextFor(tmp,v);
+  if(!it||it.done){rows.push({vid,covered:true,why:it&&it.done?'Seri lengkap':'Tidak diindikasikan'});return}
+  const ref=deadline||start;
+  if(it.kind==='booster'&&it.due>ref){rows.push({vid,covered:true,why:'Berlaku s.d. '+fmt(it.due)});return}
+  const first=maxD(start,it.min||start);const sched=[first];
+  if(vid!=='pneumo'){const doses=dosesOf(tmp,vid);const fake=[...doses,{d:first,skema:''}];const s=v.seri(tmp,fake);let cur=first;for(let i=fake.length;i<s.n;i++){cur=addDays(cur,s.iv[i-1].rec);sched.push(cur)}}
+  rows.push({vid,label:it.label,sched,ki:it.ki||[]})});
+ return {p,jenis,op,start,deadline,rows}}
+
+function renderKhusus(){const ps=patients();const opt=sel=>`<option value="">— pilih pasien —</option>`+ps.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.nama)}</option>`).join('');
+ S.isx=S.isx||{status:'aktif',mulai:'',bb:'',drugs:[]};const x=S.isx;const dv=k=>x.drugs.find(d=>d.k===k)||{};
+ $('#v-khusus').innerHTML=`<div class="grid2">
+ <div class="card"><h2>Terapi imunosupresan</h2>
+  <p class="small muted">Jenis obat menentukan vaksin yang boleh, kapan diberikan, dan jeda obat. Rujukan: EULAR 2019 (Furer, Ann Rheum Dis 2020), ACR 2022, IDSA 2013.</p>
+  <div class="row"><label class="f">Pasien<select id="is_p">${opt(S.isP)}</select></label><label class="f">Status<select id="is_st"><option value="aktif" ${x.status==='aktif'?'selected':''}>Sedang terapi</option><option value="rencana" ${x.status==='rencana'?'selected':''}>Rencana mulai terapi</option></select></label></div>
+  <div class="row"><label class="f" id="is_mw">Tanggal mulai terapi<input type="date" id="is_m" value="${esc(x.mulai||'')}"></label><label class="f">Berat badan (kg)<input type="number" id="is_bb" inputmode="decimal" value="${esc(x.bb||'')}"></label></div>
+  <div class="list">${DRUGS.map(g=>{const d=dv(g.k),on=!!d.k;return `<div class="item" style="grid-template-columns:1fr"><div>
+   <label style="display:flex;gap:8px;align-items:flex-start;font-weight:600;cursor:pointer"><input type="checkbox" class="is_c" data-k="${g.k}" ${on?'checked':''} style="width:auto;margin-top:4px">${esc(g.t)}</label>
+   <div class="row" style="margin-top:6px;${on?'':'display:none'}" id="is_r_${g.k}">
+    ${g.inp==='dose'?`<label class="f">Dosis (${g.unit})<input type="number" inputmode="decimal" class="is_i" data-k="${g.k}" data-f="dose" value="${esc(d.dose||'')}"></label>`:''}
+    ${g.inp==='ivig'?`<label class="f">Dosis (g/kg)<input type="number" step="0.1" class="is_i" data-k="${g.k}" data-f="dose" value="${esc(d.dose||'')}"></label>`:''}
+    ${g.inp==='int'?`<label class="f">Interval dosis terpanjang (hari)<input type="number" class="is_i" data-k="${g.k}" data-f="int" value="${esc(d.int||g.defInt)}"></label>`:''}
+    ${g.none?'':`<label class="f">${g.daily?'Tgl berhenti (kosong = masih minum)':'Tgl dosis terakhir'}<input type="date" class="is_i" data-k="${g.k}" data-f="last" value="${esc(d.last||'')}"></label>`}
+    ${g.inp==='rtx'?`<label class="f">Rencana dosis berikut<input type="date" class="is_i" data-k="${g.k}" data-f="next" value="${esc(d.next||'')}"></label>`:''}
+   </div></div></div>`}).join('')}</div>
+  <div id="is_out"></div></div>
+ <div class="card"><h2>Splenektomi / asplenia</h2>
+  <p class="small muted">Pneumokokus, MenACWY konjugat, dan Hib ≥14 hari sebelum splenektomi elektif, atau ≥14 hari pascaoperasi bila emergensi. Influenza tahunan.</p>
+  <div class="row"><label class="f">Pasien<select id="sp_p">${opt(S.spP)}</select></label><label class="f">Jenis<select id="sp_j"><option value="elektif" ${S.spJ!=='emergensi'&&S.spJ!=='sudah'?'selected':''}>Elektif (terjadwal)</option><option value="emergensi" ${S.spJ==='emergensi'?'selected':''}>Emergensi / sudah dioperasi</option><option value="sudah" ${S.spJ==='sudah'?'selected':''}>Asplenia fungsional / lama</option></select></label></div>
+  <div class="row"><label class="f">Tanggal operasi<input type="date" id="sp_t" value="${esc(S.spT||'')}"></label><label class="f">Mulai vaksin<input type="date" id="sp_s" value="${esc(S.spS||iso(TODAY))}"></label></div>
+  <div id="sp_out"></div></div></div>`;
+ const v=$('#v-khusus');
+ v.querySelectorAll('#is_st,#is_m,#is_bb,.is_i').forEach(e=>{e.onchange=isOut;e.oninput=isOut});
+ v.querySelectorAll('.is_c').forEach(e=>e.onchange=()=>{$('#is_r_'+e.dataset.k).style.display=e.checked?'':'none';isOut()});
+ $('#is_p').onchange=()=>{S.isP=$('#is_p').value;const p=S.isP?getP(S.isP):null;S.isx=p&&p.isx?JSON.parse(JSON.stringify(p.isx)):{status:'aktif',mulai:'',bb:'',drugs:[]};renderKhusus()};
+ ['#sp_p','#sp_j','#sp_t','#sp_s'].forEach(id=>$(id).onchange=spOut);
+ isOut();spOut()}
+function readIsx(){const x=S.isx;x.status=$('#is_st').value;x.mulai=$('#is_m').value;x.bb=$('#is_bb').value;$('#is_mw').style.display=x.status==='rencana'?'':'none';
+ x.drugs=[...document.querySelectorAll('.is_c:checked')].map(c=>{const k=c.dataset.k;const d={k};document.querySelectorAll(`.is_i[data-k="${k}"]`).forEach(i=>{if(i.value)d[i.dataset.f]=i.value});return d})}
+function isOut(){readIsx();const x=S.isx,o=$('#is_out');if(!x.drugs.length){o.innerHTML='<p class="muted small">Centang obat yang dipakai/direncanakan.</p>';return}
+ const X=isxInfo({isx:x});const p=S.isP?getP(S.isP):null;const ren=x.status==='rencana';
+ const nl=[];
+ if(ren)nl.push(X.mulai?`Berikan semua vaksin non-hidup yang diperlukan <b>≥2 minggu sebelum mulai</b> (paling lambat ${fmt(addDays(X.mulai,-14))}). Prioritaskan sebelum terapi deplesi sel B.`:'Isi tanggal mulai terapi untuk menghitung tenggat.');
+ x.drugs.forEach(d=>{const g=DG[d.k];
+  if(g.k==='mtx')nl.push('<b>Metotreksat:</b> influenza → tahan MTX 2 minggu setelah vaksin bila aktivitas penyakit memungkinkan. Vaksin non-hidup lain → MTX dilanjutkan (ACR 2022).');
+  if(g.k==='rtx'){const w=!X.rtxWin?'':X.rtxWin.to&&X.rtxWin.to<X.rtxWin.from?` <b>Pasien ini:</b> dosis RTX berikut (${fmt(X.rtxWin.next)}) jatuh sebelum 6 bln pasca dosis terakhir (${fmt(X.rtxWin.from)}) → pakai pendekatan ACR: vaksin pada ${fmt(X.rtxWin.next)}, RTX ditunda ≥2 mgg, atau diskusikan penundaan RTX dengan DPJP.`:` <b>Jendela pasien ini:</b> ≥ ${fmt(X.rtxWin.from)}`+(X.rtxWin.to?` s.d. ${fmt(X.rtxWin.to)}`:'')+'.';nl.push(`<b>Rituksimab:</b> influenza → beri sesuai jadwal, tunda dosis RTX berikut ≥2 minggu. Vaksin non-hidup lain → idealnya sebelum mulai RTX; bila sudah, ≥6 bulan setelah dosis terakhir dan ≥4 minggu sebelum dosis berikut (EULAR 2019), atau diberikan saat RTX berikut jatuh tempo lalu RTX ditunda ≥2 minggu (ACR 2022).${w} Respons humoral dapat tetap rendah → cek titer bila relevan (mis. anti-HBs).`)}
+  if(g.k==='gc')nl.push(X.gc20?'<b>Glukokortikoid ≥20 mg/hari:</b> influenza tetap diberikan; vaksin non-hidup lain ditunda sampai &lt;20 mg/hari (ACR 2022).':'<b>Glukokortikoid &lt;20 mg/hari:</b> semua vaksin non-hidup dapat diberikan tanpa perubahan dosis.');
+  if(g.k==='aba'||g.k==='mmf')nl.push(`<b>${esc(g.s)}:</b> lanjutkan (ACR 2022); respons humoral dapat menurun — vaksinasi tetap dianjurkan.`)});
+ nl.push('Obat lain: dilanjutkan tanpa jeda untuk vaksin non-hidup (ACR 2022). Vaksin non-hidup aman apa pun terapinya; idealnya diberikan saat penyakit tenang (EULAR 2019).');
+ let live='';
+ if(ren)live=X.mulai?`Bila ada indikasi (seronegatif MMR/varisela, YF, JE-Imojev, dengue): berikan <b>≥4 minggu sebelum mulai</b> (paling lambat ${fmt(addDays(X.mulai,-28))}).`:'';
+ else if(X.live.length||X.ivigM){live=`<p class="small">Umumnya <b>dihindari</b> selama terapi; hanya dipertimbangkan dengan hati-hati (EULAR 2019). Bila krusial: jeda obat sebelum vaksin, lalu lanjutkan obat <b>≥4 minggu setelah</b> vaksin (ACR 2022).</p>
+  <div class="tbl-wrap"><table><thead><tr><th>Obat</th><th>Jeda sebelum</th><th>Vaksin hidup paling cepat</th></tr></thead><tbody>${X.live.map(l=>`<tr><td>${esc(l.g.s)}</td><td>${l.g.k==='rtx'?'6 bulan':l.g.inp==='int'?`1 interval (${l.hold} hr)`:l.hold>=28?'4 minggu':'1 minggu'}</td><td class="num">${fmt(l.until)}${l.known?'':' <span class="tiny muted">(bila berhenti hari ini)</span>'}</td></tr>`).join('')}${X.ivigM?`<tr><td>IVIG</td><td>${X.ivigM} bulan (MMR/varisela)</td><td class="num">${X.ivigDate?fmt(X.ivigDate):'isi tgl terakhir'}</td></tr>`:''}</tbody></table></div>
+  ${X.low.length?`<p class="small">Dosis rendah (${X.low.join('; ')}): jeda dapat dipersingkat bila vaksin hidup krusial dan risiko flare tinggi (ACR 2022).</p>`:''}`}
+ const pri=[['flu','Influenza tahunan, juga saat penyakit aktif, GC dosis tinggi, atau RTX'],['pneumo','PCV20 (atau PCV13/15 → PPSV23 ≥8 mgg)'],['zoster','RZV 2 dosis pada ≥18 th dengan imunosupresan (ACR 2022: rekomendasi kuat)'],['hepb','Bila berisiko/seronegatif; skrining HBsAg, anti-HBc, anti-HBs sebelum biologik/RTX'],['hpv','≤45 th bila belum (ACR 2022: kondisional 27–45 th)'],['covid','Sesuai rekomendasi terbaru'],['td','Sesuai populasi umum']];
+ const priHtml=pri.map(([vid,t])=>{let st='';if(p){const tmp={...p,isx:x};const it=nextFor(tmp,VX[vid]);st=!it?'<span class="pill">tidak diindikasikan</span>':it.done?'<span class="pill ok">lengkap</span>':pill(it.status)}return `<li><b>${esc(VX[vid].nama)}</b> ${st} — <span class="muted">${t}</span></li>`}).join('');
+ o.innerHTML=`<div class="result ${X.high?'danger':'warn'}"><div><span class="pill ${X.high?'danger':'warn'}">Imunosupresi ${X.high?'tingkat tinggi':X.any?'tingkat rendah':'minimal'}</span></div><ul class="small">${X.level.map(l=>`<li><b>${esc(l.g.s)}</b>: ${esc(l.lvl)}</li>`).join('')}</ul></div>
+ <h3>Vaksin non-hidup</h3><ul class="small" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px">${nl.map(t=>`<li>${t}</li>`).join('')}</ul>
+ <h3>Vaksin hidup</h3>${live||'<p class="small muted">—</p>'}
+ <h3>Prioritas vaksin${p?' — '+esc(p.nama):''}</h3><ul class="small" style="margin:0;padding-left:18px">${priHtml}</ul>
+ <h3>Skrining sebelum mulai terapi</h3><p class="small">HBsAg, anti-HBc total, anti-HBs; anti-HCV; HIV; IGRA/TST + foto toraks (sebelum biologik/JAK); IgG varisela dan campak bila riwayat tidak jelas; kadar imunoglobulin sebelum RTX.</p>
+ <h3>Kontak serumah</h3><p class="small">Divaksin sesuai jadwal nasional, termasuk vaksin hidup, kecuali OPV (EULAR 2019). Pasca varisela pada kontak: hindari kontak dengan ruam vaksin.</p>
+ ${p&&!p.demo?'<div class="row"><button class="btn primary" data-act="issave">Simpan terapi ke pasien</button><span class="tiny muted">Pengingat & peringatan KI pasien akan menyesuaikan.</span></div>':''}`}
+function spOut(){S.spP=$('#sp_p').value;S.spJ=$('#sp_j').value;S.spT=$('#sp_t').value;S.spS=$('#sp_s').value;const o=$('#sp_out');const P=splenPlan();
+ if(P.err){o.innerHTML=`<p class="muted small">${esc(P.err)}.</p>`;return}
+ const tag=d=>{if(P.jenis!=='elektif')return '';if(d<=P.deadline)return '<span class="pill ok">≥14 hr pra-op</span>';if(d<P.op)return '<span class="pill warn">&lt;14 hr pra-op (tetap valid)</span>';return '<span class="pill info">pasca-op</span>'};
+ const rows=P.rows.map(r=>{const v=VX[r.vid];if(r.na)return `<tr><td><b>${esc(v.nama)}</b></td><td colspan="2"><span class="pill">Tidak tersedia di Indonesia</span> <span class="small">Tidak dijadwalkan. Bila pasien ke luar negeri, dapat divaksin di sana (2 dosis ≥1 bln).</span></td></tr>`;if(r.covered)return `<tr><td><b>${esc(v.nama)}</b></td><td colspan="2"><span class="pill ok">Terlindungi</span> <span class="small">${esc(r.why)}</span></td></tr>`;
+  return `<tr><td><b>${esc(v.nama)}</b><div class="tiny muted">${esc(r.label)}</div>${r.ki.length?`<div>${r.ki.map(k=>`<span class="pill ${k.hard?'danger':'warn'}">${esc(k.t)}</span>`).join(' ')}</div>`:''}</td><td class="num small">${r.sched.map((d,i)=>`D${i+1}: ${fmt(d)}`).join('<br>')}</td><td>${r.sched.map(tag).join('<br>')}</td></tr>`}).join('');
+ const late=P.jenis==='elektif'&&P.start>P.deadline;
+ o.innerHTML=`${late?`<div class="banner warn small">Mulai vaksin kurang dari 14 hari sebelum operasi. Dosis yang diberikan dalam 14 hari pra-operasi tetap valid; alternatifnya, tunda ke ≥14 hari pascaoperasi (${fmt(addDays(P.op,14))}).</div>`:''}
+ ${P.jenis==='emergensi'?`<div class="banner small">Mulai ≥14 hari pascaoperasi (${fmt(addDays(P.op,14))}). Bila follow-up tidak pasti, berikan sebelum pulang.</div>`:''}
+ <div class="tbl-wrap"><table><thead><tr><th>Vaksin</th><th>Tanggal</th><th>Terhadap operasi</th></tr></thead><tbody>${rows}</tbody></table></div>
+ <ul class="small" style="margin:0;padding-left:18px">
+  <li>MenACWY: gunakan <b>konjugat</b> (Nimenrix/MenQuadfi/Menveo), 2 dosis jarak ≥8 minggu, booster tiap 5 tahun. Riwayat polisakarida (Menivax) tidak dihitung sebagai seri primer.</li>
+  <li>Hib: Act-HIB 1 dosis. MenB tidak tersedia di Indonesia — tekankan edukasi tanda sepsis &amp; antibiotik standby.</li>
+  <li>Bila pasien sedang mendapat imunosupresan (mis. rituksimab untuk ITP), cek juga panel Terapi imunosupresan.</li>
+  <li>Edukasi: kartu asplenia, antibiotik standby (amoksisilin-klavulanat), segera ke IGD bila demam; profilaksis malaria bila bepergian.</li></ul>
+ ${!P.p.demo?'<div class="row"><button class="btn primary" data-act="spsave">Simpan ke pasien (jadi pengingat)</button><span class="tiny muted">Menandai pasien sebagai asplenia.</span></div>':''}`;S._sp=P}
+function spSave(){const P=S._sp;if(!P||P.err)return;const p=P.p;if(guardDemo(p))return;const np=JSON.parse(JSON.stringify(p));np.flags=np.flags||{};np.flags.asplenia=true;np.splen={jenis:P.jenis,tgl:P.op?iso(P.op):''};np.plans=np.plans||[];
+ const items=[];P.rows.forEach(r=>{if(r.covered||r.na)return;const prev=dosesOf(p,r.vid).length;r.sched.forEach((d,i)=>items.push({id:uid(),vid:r.vid,tgl:iso(d),label:`Dosis ${prev+i+1}`,ket:r.vid==='pneumo'?r.label:''}))});
+ np.plans.push({id:uid(),tujuan:'Splenektomi '+P.jenis+(P.op?' '+fmt(P.op):''),berangkat:P.op?iso(P.op):iso(TODAY),items});savePatient(np);toast(items.length+' dosis masuk pengingat')}
+function isSave(){const p=S.isP?getP(S.isP):null;if(!p||guardDemo(p))return;readIsx();const np=JSON.parse(JSON.stringify(p));np.isx=JSON.parse(JSON.stringify(S.isx));savePatient(np);toast('Terapi imunosupresan disimpan')}
+
+/* ============ Catalogue ============ */
+function prodEditor(v){const f=S.form[v.id]||{};const hide=f.hide||[];
+ const chips=[...v.produk.filter(x=>x!=='Lainnya').map(x=>({x,def:true,off:hide.includes(x)})),...(f.add||[]).map(x=>({x,def:false}))];
+ return `<div class="row" style="gap:6px">${chips.map(c=>`<span class="pill ${c.off?'':c.def?'ok':'accent'}" style="${c.off?'text-decoration:line-through;opacity:.6':''}">${esc(c.x)} <button class="btn ghost tiny" style="padding:0 2px" data-act="${c.def?'prodtog':'proddel'}" data-vid="${v.id}" data-x="${esc(c.x)}" aria-label="${c.off?'Tampilkan':'Sembunyikan'} ${esc(c.x)}">${c.off?'↺':'✕'}</button></span>`).join('')}</div>
+ <div class="row" style="margin-top:6px"><input id="pa_${v.id}" placeholder="Tambah: Merek (tipe) — produsen" style="flex:1 1 200px"><button class="btn" data-act="prodadd" data-vid="${v.id}">Tambah</button></div>
+ <div class="tiny muted">✕ = sembunyikan bila tidak tersedia di klinik; ↺ = tampilkan lagi.</div>`}
+function renderKatalog(){const q=(S.kq||'').toLowerCase();const kat=S.kk||'Semua';const cats=['Semua','Rutin','Risiko','Perjalanan'];
+ const list=VAX.filter(v=>(!q||(v.nama+v.produk.join(' ')).toLowerCase().includes(q))&&(kat==='Semua'||v.kat.includes(kat)));
+ const li=a=>`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+ $('#v-katalog').innerHTML=`<div class="card"><div class="row"><h2 class="grow">Katalog vaksin dewasa</h2><div class="seg">${cats.map(c=>`<button data-act="kk" data-k="${c}" aria-pressed="${c===kat}">${c}</button>`).join('')}</div></div>
+ <input id="kq" placeholder="Cari vaksin / merek" value="${esc(S.kq||'')}">
+ <div>${list.map(v=>`<details class="vx" ${S.kOpen===v.id?'open':''}><summary><b>${esc(v.nama)}</b><span class="pill">${esc(v.kat)}</span>${v.live?'<span class="pill warn">Hidup</span>':''}${v.tidakTersedia?'<span class="pill danger">Tidak tersedia di Indonesia</span>':''}</summary>
+  <dl class="kv"><dt>Jenis</dt><dd>${esc(v.jenis)}</dd><dt>Produk di klinik</dt><dd>${prodEditor(v)}</dd><dt>Rute / dosis</dt><dd>${esc(v.rute)}</dd>
+  <dt>Jadwal</dt><dd>${esc(v.jadwal)}</dd><dt>Opsi pengganti</dt><dd>${esc(v.pengganti)}</dd>
+  <dt>Kontraindikasi</dt><dd>${li(v.ki)}</dd><dt>Perhatian</dt><dd>${li(v.perhatian)}</dd>
+  <dt>Efek samping</dt><dd>${li(v.es)}</dd><dt>Tatalaksana</dt><dd>${li(v.tl)}</dd></dl></details>`).join('')}</div></div>
+ <div class="card"><h3>Aturan umum interval</h3><ul class="small" style="margin:0;padding-left:18px">
+  <li>Vaksin inaktif: boleh bersamaan atau dengan interval berapa pun (kecuali PCV ↔ PPSV23: tidak di hari yang sama).</li>
+  <li>Vaksin hidup parenteral: bersamaan atau jarak ≥28 hari. Dosis hidup &lt;28 hari dari vaksin hidup lain → ulang dosis kedua.</li>
+  <li>Grace period: dosis ≤4 hari lebih awal dari interval minimal masih valid; &gt;4 hari → ulang setelah interval minimal.</li>
+  <li>Seri terputus: lanjutkan, jangan mengulang dari awal (kecuali rabies PEP dengan penyimpangan besar & kasus khusus).</li>
+  <li>Produk darah/IVIG → tunda MMR/varisela 3–11 bln; vaksin inaktif tidak terpengaruh.</li>
+  <li>Imunosupresi: vaksin inaktif ≥2 mgg sebelum memulai terapi; vaksin hidup ≥4 mgg sebelum, dan ≥1–3 bln setelah steroid dosis tinggi/kemoterapi (≥6 bln setelah anti-CD20).</li></ul></div>`;
+ const kq=$('#kq');kq.oninput=()=>{S.kq=kq.value;const pos=kq.selectionStart;renderKatalog();const n=$('#kq');n.focus();n.setSelectionRange(pos,pos)}}
+
+/* ============ KIPI ============ */
+const EVENTS=[
+ {k:'lokal',t:'Reaksi lokal ringan (nyeri, kemerahan, bengkak <lengan atas)',ser:false,next:'Bukan kontraindikasi dosis berikutnya.',tl:'Kompres dingin, parasetamol 500–1000 mg tiap 6–8 jam bila perlu (maks 4 g/hari; 2–3 g/hari pada penyakit hati/alkoholisme).'},
+ {k:'lokalLuas',t:'Bengkak luas (melewati sendi terdekat) / reaksi Arthus',ser:false,next:'Arthus pasca toksoid tetanus/difteri: tunda dosis tetanus ≥10 tahun. Bengkak luas tanpa Arthus bukan KI.',tl:'Kompres dingin, elevasi, analgetik/NSAID; antihistamin bila gatal. Bedakan dari selulitis (onset >48 jam, demam, nyeri progresif).',lapor:true},
+ {k:'abses',t:'Abses / infeksi di tempat suntikan',ser:false,next:'Bukan KI; evaluasi teknik aseptik & penyimpanan vaksin.',tl:'Insisi drainase bila fluktuasi, antibiotik sesuai klinis.',lapor:true,prosedur:true},
+ {k:'demam',t:'Demam / gejala sistemik ringan (mialgia, sakit kepala, lelah)',ser:false,next:'Bukan kontraindikasi.',tl:'Parasetamol 500–1000 mg tiap 6–8 jam (maks 4 g/hari) atau ibuprofen 400 mg tiap 6–8 jam bila tidak ada KI. Antipiretik profilaksis rutin tidak dianjurkan.'},
+ {k:'isrr',t:'Sinkop / reaksi stres imunisasi (ISRR)',ser:false,next:'Bukan KI. Dosis berikutnya dalam posisi duduk/berbaring, observasi 15 menit.',tl:'Baringkan, elevasi tungkai, longgarkan pakaian; cek tanda vital & gula darah; bedakan dengan anafilaksis (tidak ada urtikaria/bronkospasme, nadi lambat, kulit pucat-dingin).',lapor:true},
+ {k:'alergi',t:'Urtikaria/angioedema tanpa gangguan napas/sirkulasi (≤4 jam)',ser:false,next:'Evaluasi alergologi sebelum dosis berikutnya; dosis berikut dengan observasi 30 menit.',tl:'Antihistamin H1 non-sedatif (cetirizine 10 mg); observasi progresi ke anafilaksis minimal 1–2 jam.',lapor:true},
+ {k:'anafilaksis',t:'Anafilaksis',ser:true,next:'KONTRAINDIKASI dosis berikutnya vaksin yang sama/komponen yang sama. Rujuk alergi-imunologi untuk identifikasi komponen (PEG, polisorbat, gelatin, neomisin, lateks).',tl:'anafilaksis'},
+ {k:'kejang',t:'Kejang',ser:true,next:'Evaluasi neurologi; timbang ulang manfaat dosis berikutnya.',tl:'ABC, posisi miring, diazepam 10 mg IV/rektal atau midazolam 10 mg IM bila >5 menit; cari penyebab (demam, hipoglikemia, elektrolit).'},
+ {k:'gbs',t:'Guillain–Barré syndrome (≤6 mgg pasca vaksin)',ser:true,next:'GBS ≤6 mgg pasca influenza/tetanus: perhatian untuk dosis berikutnya vaksin tersebut; RSV: hindari dosis ulang.',tl:'Rawat inap, monitor kapasitas vital/NIF, rujuk neurologi; IVIG 0,4 g/kg/hari × 5 hari atau plasmaferesis.'},
+ {k:'miokarditis',t:'Miokarditis / perikarditis',ser:true,next:'Hindari dosis mRNA berikutnya; gunakan platform non-mRNA bila perlu.',tl:'EKG, troponin, ekokardiografi; rawat & konsultasi kardiologi; NSAID/kolkisin untuk perikarditis.'},
+ {k:'trombo',t:'Trombositopenia / perdarahan',ser:true,next:'ITP pasca MMR: timbang serologi sebelum dosis kedua.',tl:'Hitung darah lengkap, apusan; rujuk hematologi.'},
+ {k:'neuro',t:'Ensefalitis / ADEM / mielitis / YEL-AND / YEL-AVD',ser:true,next:'KI dosis berikutnya vaksin yang sama.',tl:'Rawat inap, neurologi; pemeriksaan LCS; terapi suportif.'},
+ {k:'diseminata',t:'Infeksi diseminata strain vaksin (hidup) pada imunokompromais',ser:true,next:'KI vaksin hidup selanjutnya.',tl:'Rawat; asiklovir IV untuk strain varisela; konsultasi infeksi.'},
+ {k:'error',t:'Kesalahan program (salah vaksin/dosis/rute, kedaluwarsa, vaksin hidup pada hamil) tanpa gejala',ser:false,next:'Tentukan apakah dosis valid; vaksin hidup pada kehamilan bukan indikasi terminasi — konseling.',tl:'Observasi; dokumentasi; ulang dosis bila tidak valid.',lapor:true,prosedur:true},
+ {k:'lain',t:'Kejadian lain / tidak terduga (sinyal baru)',ser:false,next:'Sesuai penilaian klinis.',tl:'Sesuai klinis.',lapor:true}
+];
+function renderKipi(){const ps=patients();
+ $('#v-kipi').innerHTML=`<div class="grid2"><div class="card"><h2>Penilaian KIPI &amp; pelaporan</h2>
+ <div class="row"><label class="f">Pasien (opsional)<select id="kp_p"><option value="">—</option>${ps.map(p=>`<option value="${p.id}">${esc(p.nama)}</option>`).join('')}</select></label>
+ <label class="f">Vaksin<select id="kp_v">${VAX.map(v=>`<option value="${v.id}">${esc(v.nama)}</option>`).join('')}</select></label></div>
+ <div class="row"><label class="f">Tanggal vaksin<input type="date" id="kp_tv" value="${iso(TODAY)}"></label><label class="f">Onset (setelah vaksin)<input id="kp_on" placeholder="mis. 15 menit / 2 hari"></label><label class="f">No. batch<input id="kp_lot"></label></div>
+ <label class="f">Kejadian<select id="kp_e">${EVENTS.map(e=>`<option value="${e.k}">${esc(e.t)}</option>`).join('')}</select></label>
+ <div class="small muted" style="font-weight:600">Kriteria serius (WHO / Permenkes 12/2017)</div>
+ <div class="checks">${[['mati','Kematian'],['ancam','Mengancam jiwa'],['rawat','Rawat inap / perpanjangan rawat'],['cacat','Kecacatan menetap'],['kongen','Kelainan kongenital (vaksin saat hamil)'],['kluster','Kluster (≥2 kasus serupa, waktu/tempat/lot sama)'],['resah','Menimbulkan keresahan masyarakat/media']].map(([k,t])=>`<label><input type="checkbox" class="kp_c" value="${k}">${t}</label>`).join('')}</div>
+ <label class="f">Kronologi singkat<textarea id="kp_kr"></textarea></label>
+ <div id="kp_out"></div></div>
+ <div class="card"><h2>Tatalaksana anafilaksis</h2><div class="row"><label class="f">Berat badan (kg)<input id="bb" type="number" inputmode="decimal" value="60" min="3" max="250"></label></div><div id="ana"></div></div></div>`;
+ const go=()=>kipiOut();$('#v-kipi').querySelectorAll('input,select,textarea').forEach(x=>{x.oninput=go;x.onchange=go});go();anaOut()}
+function anaHtml(bb){const ad=Math.min(0.01*bb,0.5);const fl20=Math.round(20*bb);const inf1=(0.05*bb).toFixed(1),inf2=(0.1*bb).toFixed(1);
+ return `<ol class="small" style="padding-left:20px;margin:0;display:flex;flex-direction:column;gap:4px">
+ <li><b>Adrenalin 1 mg/mL (1:1000) IM</b> anterolateral paha: 0,01 mg/kg × ${bb} kg = <b class="num">${ad.toFixed(2)} mg = ${ad.toFixed(2)} mL</b> (maks 0,5 mg). Ulang tiap 5–15 menit bila tidak membaik.</li>
+ <li>Posisi telentang, tungkai elevasi (sesak: setengah duduk; hamil: miring kiri). Jangan didudukkan/berdiri mendadak.</li>
+ <li>O₂ 6–8 L/menit; pasang akses IV.</li>
+ <li>Hipotensi: kristaloid bolus 20 mL/kg = <b class="num">${fl20} mL</b> cepat (dewasa 1–2 L), ulang sesuai respons.</li>
+ <li>Bronkospasme persisten: salbutamol nebul 2,5–5 mg.</li>
+ <li>Refrakter (≥2 dosis IM): infus adrenalin 0,05–0,1 µg/kg/menit = <b class="num">${inf1}–${inf2} µg/menit</b>, titrasi, dengan monitor. Pengguna β-bloker: glukagon 1–5 mg IV 5 menit.</li>
+ <li>Adjuvan (bukan terapi lini pertama): antihistamin H1 (difenhidramin 25–50 mg IV/IM), ± kortikosteroid.</li>
+ <li>Observasi ≥4–6 jam (reaksi bifasik); 12–24 jam bila berat/perlu &gt;1 dosis adrenalin.</li>
+ <li>Catat waktu, dosis, respons. Ambil triptase serum 1–2 jam pasca onset bila memungkinkan.</li>
+ <li><b>KIPI serius → lapor ≤24 jam.</b> Dosis berikutnya vaksin yang sama dikontraindikasikan sampai evaluasi alergi.</li></ol>
+ <p class="tiny muted">Rujukan: WAO Anaphylaxis Guidance 2020; pedoman KIPI Kemenkes. Observasi pasca vaksin rutin 15 menit; 30 menit bila riwayat alergi berat.</p>`}
+function anaOut(){const bb=parseFloat($('#bb').value)||60;$('#ana').innerHTML=anaHtml(bb);$('#bb').oninput=anaOut}
+function kipiOut(){const e=EVENTS.find(x=>x.k===$('#kp_e').value);const crit=[...document.querySelectorAll('.kp_c:checked')].map(x=>x.value);const v=VX[$('#kp_v').value];
+ const serius=e.ser||crit.some(c=>c!=='resah'&&c!=='kluster')||false;const kluster=crit.includes('kluster')||crit.includes('resah');const urgent=serius||kluster;
+ const cls=serius?'SERIUS':kluster?'NON-SERIUS — kluster/keresahan (perlakukan seperti serius)':'NON-SERIUS';
+ const lapor=urgent?`<b>Wajib lapor segera</b> — dalam 24 jam ke Dinkes Kab/Kota (berjenjang ke Dinkes Provinsi → Komda PP-KIPI → Komnas PP-KIPI, 24–72 jam) melalui <span class="mono">keamananvaksin.kemkes.go.id</span> dengan formulir laporan KIPI. Lakukan investigasi; amankan sisa vaksin/vial dan catat nomor batch, suhu penyimpanan. Untuk vaksin non-program/swasta, laporkan juga ke BPOM (e-MESO).`
+  :e.lapor?`<b>Laporkan</b> dalam laporan rutin KIPI non-serius (rekap bulanan via keamananvaksin / e-MESO BPOM untuk vaksin non-program). Tidak perlu investigasi lapangan${e.prosedur?'; evaluasi sebagai kesalahan prosedur/program dan lakukan perbaikan teknik':''}.`
+  :`<b>Catat</b> di rekam medis & register KIPI; masuk rekap rutin non-serius. Tidak perlu laporan segera/investigasi kecuali kejadian tidak lazim atau meningkat frekuensinya.`;
+ const tl=e.tl==='anafilaksis'?'Lihat panel tatalaksana anafilaksis (dosis adrenalin berdasarkan BB).':esc(e.tl);
+ $('#kp_out').innerHTML=`<div class="result ${urgent?'danger':e.lapor?'warn':'ok'}"><div><span class="pill ${urgent?'danger':'ok'}">${cls}</span></div>
+  <div class="small">${lapor}</div><div class="small"><b>Tatalaksana:</b> ${tl}</div><div class="small"><b>Dosis berikutnya:</b> ${esc(e.next)}</div>
+  <div class="small"><b>Efek samping yang diharapkan untuk ${esc(v.nama)}:</b> ${esc(v.es.join('; '))}</div>
+  <div class="row"><button class="btn" data-act="kipicopy">Salin draf laporan</button>${$('#kp_p').value?'<button class="btn" data-act="kipisave">Simpan ke riwayat pasien</button>':''}</div></div>`;
+ S._kipi={e,crit,v,cls,urgent}}
+function kipiText(){const k=S._kipi;const p=$('#kp_p').value?getP($('#kp_p').value):null;
+ return `LAPORAN KIPI\nKlasifikasi: ${k.cls}\nPasien: ${p?p.nama+' / RM '+(p.rm||'-')+' / '+(ageOf(p)??'?')+' th / '+(p.jk||''):'-'}\nVaksin: ${k.v.nama} · batch ${$('#kp_lot').value||'-'} · tgl ${fmt(parseD($('#kp_tv').value))}\nOnset: ${$('#kp_on').value||'-'}\nKejadian: ${k.e.t}\nKriteria serius: ${k.crit.join(', ')||'tidak ada'}\nKronologi: ${$('#kp_kr').value||'-'}\nTatalaksana: \nKondisi akhir: \nPelapor: \nTanggal lapor: ${fmt(TODAY)}`}
+function kipiSave(){const p=getP($('#kp_p').value);if(!p||guardDemo(p))return;const np=JSON.parse(JSON.stringify(p));const tv=$('#kp_tv').value,vid=$('#kp_v').value;
+ const h=(np.history||[]).filter(x=>x.vid===vid).sort((a,b)=>Math.abs(diffDays(parseD(a.tgl),parseD(tv)))-Math.abs(diffDays(parseD(b.tgl),parseD(tv))))[0];
+ const note=`${S._kipi.e.t} (${S._kipi.cls}) ${$('#kp_on').value}`.trim();
+ if(h&&Math.abs(diffDays(parseD(h.tgl),parseD(tv)))<=3){h.kipi=note}else{np.history=np.history||[];np.history.push({id:uid(),vid,tgl:tv,produk:'',kipi:note,cat:'Dicatat dari modul KIPI'})}
+ if(S._kipi.e.k==='anafilaksis'){np.flags=np.flags||{};np.flags.anafilaksis=(np.flags.anafilaksis?np.flags.anafilaksis+'; ':'')+VX[vid].nama+' ('+fmt(parseD(tv))+')'}
+ savePatient(np);toast('KIPI tersimpan di riwayat pasien')}
+
+/* ============ Updates ============ */
+const UPDATES=[
+ {tgl:'2026-11',t:'Koreksi ketersediaan MenB & Hib (verifikasi klinik)',d:'Bexsero (MenB) tidak tersedia di Indonesia — tidak lagi dijadwalkan di perencana splenektomi; entri katalog hanya untuk riwayat luar negeri. Act-HIB (Hib) berizin edar — tetap dijadwalkan 1 dosis untuk asplenia.',src:''},
+ {tgl:'2026-11',t:'Modul Kondisi Khusus: imunosupresan & splenektomi',d:'Rekomendasi per obat (EULAR 2019, ACR 2022): jeda MTX pasca influenza, jendela rituksimab, GC ≥20 mg, jeda sebelum/sesudah vaksin hidup per kelas obat, IVIG. Perencana splenektomi elektif/emergensi (PCV, MenACWY konjugat 2 dosis, Hib). Vaksin MenB dan Hib ditambahkan ke katalog.',src:'https://assets.contentstack.io/v3/assets/bltee37abb6b278ab2c/bltee2557e046e57761/vaccinations-guideline-summary-2022.pdf'},
+ {tgl:'2026-11',t:'Koreksi izin edar (verifikasi klinik)',d:'Dihapus dari daftar default karena tidak memiliki izin edar aktif: Influvac TIV, Ixiaro (JE inaktif), Typbar-TCV, Hepavax-Gene, HBvaxPRO. JE di Indonesia kini hanya Imojev (hidup) — KI pada kehamilan/imunokompromais tanpa alternatif inaktif. Vaxneuvance (PCV15) dan Euvax B terkonfirmasi beredar.',src:''},
+ {tgl:'2026-11',t:'Daftar produk disesuaikan dengan ketersediaan Indonesia',d:'Influenza TIV (Vaxigrip, Flubio) ditambahkan; QIV tetap tersedia (Vaxigrip Tetra, Fluarix Tetra, SKYCellflu). Menivax (polisakarida, Bio Farma), NusaGard (HPV 4v, Bio Farma), Bio-TCV ditambahkan. Kelola produk per klinik di tab Katalog.',src:''},
+ {tgl:'2026-04',t:'BPOM: perluasan indikasi vaksin MR/MMR untuk dewasa',d:'Izin perluasan indikasi untuk vaksin MR, MMR dan measles (Bio Farma/SII, GSK, MSD); Kemenkes memprioritaskan vaksinasi campak bagi nakes.',src:'https://infopublik.id/kategori/nasional-sosial-budaya/965167/kemenkes-prioritaskan-vaksinasi-campak-bagi-nakes-di-tengah-lonjakan-kasus'},
+ {tgl:'2026-03',t:'BPOM: izin edar SKYCellflu Quadrivalent (Dexa Medica)',d:'Vaksin influenza QIV berbasis kultur sel, izin edar 9 Maret 2026.',src:'https://industri.kontan.co.id/news/akses-vaksinasi-influenza-semakin-diperluas'},
+ {tgl:'2026-02',t:'Panel ahli Indonesia: transisi QIV → TIV',d:'Transisi ke trivalen sesuai epidemiologi terkini, proteksi, keamanan dan efektivitas sebanding (pertemuan 16 Feb 2026).',src:'https://www.klikdokter.com/info-sehat/kesehatan-umum/world-flu-day-finish-strong-2026-lindungi-diri-dan-tim-dengan-vaksin-influenza-yang-tepat'},
+ {tgl:'2026-02',t:'KSA: Persyaratan kesehatan Umrah 1447H (2026)',d:'MenACWY wajib untuk semua jemaah umrah; vaksin konjugat ditegaskan aman-efektif termasuk >55 th; OPV dianjurkan ≤6 bln dan ≥4 mgg sebelum tiba (negara tertentu).',src:'https://www.moh.gov.sa/en/HealthAwareness/Pilgrims-Health/Documents/Health-Regulations-Umrah-EN.pdf'},
+ {tgl:'2025-07',t:'PAPDI: rekomendasi pneumokokus dewasa diperbarui',d:'PCV dapat diberikan mulai usia 18 th, PPSV23 mulai 50 th; PCV20 disetujui BPOM September 2024.',src:'https://health.detik.com/berita-detikhealth/d-8015678/kasus-pneumonia-di-ri-masih-tinggi-papdi-rekomendasikan-vaksin-untuk-usia-18'},
+ {tgl:'2025-04',t:'ACIP: RSV diperluas ke 50–59 th risiko tinggi',d:'Semua ≥75 th dan 50–74 th dengan peningkatan risiko; dosis tunggal.',src:''},
+ {tgl:'2025-02',t:'PAPDI: Jadwal Imunisasi Dewasa 2025 — vaksin RSV ditambahkan',d:'RSV beradjuvan untuk ≥60 th atau 50–59 th dengan komorbid; RSV non-adjuvan ≥60 th atau hamil 24–36 mgg.',src:'https://www.idntimes.com/health/medical/papdi-rilis-jadwal-imunisasi-dewasa-terbaru2025-00-92d83-j93kcc'},
+ {tgl:'2025-02',t:'KSA: MenACWY wajib untuk jemaah Umrah (mulai 10 Feb 2025)',d:'≥10 hari sebelum tiba; polisakarida berlaku 3 th, konjugat 5 th.',src:'https://kun.uz/en/44367188'},
+ {tgl:'2025-01',t:'FDA: peringatan GBS pada label Arexvy & Abrysvo',d:'Risiko GBS meningkat dalam 42 hari pasca vaksin pada ≥60 th; manfaat tetap lebih besar.',src:''},
+ {tgl:'2025-08',t:'FDA menangguhkan lisensi Ixchiq (chikungunya, hidup)',d:'Kejadian serius pada lansia. Vimkunya (VLP, inaktif) disetujui AS/UE 2025. Keduanya belum tersedia di Indonesia.',src:''},
+ {tgl:'2024-10',t:'ACIP: usia rekomendasi PCV diturunkan ke ≥50 th',d:'PCV20 atau PCV21 tunggal, atau PCV15 → PPSV23.',src:''},
+ {tgl:'2024-09',t:'Influenza: transisi ke trivalen',d:'B/Yamagata dihapus dari rekomendasi komposisi WHO; produk trivalen mulai menggantikan kuadrivalen.',src:''},
+ {tgl:'2022-08',t:'BPOM: Qdenga (TAK-003) disetujui',d:'Usia 6–45 th, 2 dosis 0–3 bln, tanpa skrining serostatus.',src:''}
+];
+function renderUpdate(){const all=[...S.custom.map(x=>({...x,own:true})),...UPDATES].sort((a,b)=>(b.tgl||'').localeCompare(a.tgl||''));
+ $('#v-update').innerHTML=`<div class="card"><h2>Update vaksin &amp; regulasi</h2><p class="small muted">Diperbarui terakhir oleh Claude: 20 Nov 2026 (daftar produk Indonesia). Tambahkan catatan sendiri saat ada vaksin/regulasi baru; untuk memperbarui katalog dan logika jadwal, minta Claude di proyek "Vaksinasi dewasa".</p>
+ <div class="list">${all.map(u=>`<div class="item"><span class="stripe ${u.own?'accent':'info'}"></span><div><div class="row" style="gap:6px"><span class="num small muted">${esc(u.tgl)}</span><span class="t">${esc(u.t)}</span>${u.own?'<span class="pill accent">catatan Anda</span>':''}</div><div class="meta">${esc(u.d)}</div>${u.src?`<div class="meta"><a href="${esc(u.src)}" target="_blank" rel="noopener">Sumber</a></div>`:''}</div><div>${u.own?`<button class="btn ghost danger" data-act="delu" data-id="${u.id}">Hapus</button>`:''}</div></div>`).join('')}</div></div>
+ <div class="card"><h3>Tambah update</h3><form id="uf"><div class="row"><label class="f">Bulan<input type="month" id="uf_t" value="${iso(TODAY).slice(0,7)}"></label><label class="f" style="flex:3 1 260px">Judul<input id="uf_j" required placeholder="mis. Vaksin X disetujui BPOM"></label></div>
+ <label class="f">Detail<textarea id="uf_d"></textarea></label><label class="f">Tautan sumber<input id="uf_s" type="url" placeholder="https://"></label><div class="row"><button class="btn primary" type="submit">Simpan</button></div></form></div>`;
+ $('#uf').onsubmit=e=>{e.preventDefault();S.custom.push({id:uid(),tgl:$('#uf_t').value,t:$('#uf_j').value.trim(),d:$('#uf_d').value.trim(),src:$('#uf_s').value.trim()});saveCustom();toast('Update disimpan')}}
+
+/* ============ Router & events ============ */
+function render(){setStore();renderPengingat();const t=S.tab;if(t==='pasien')renderPasien();if(t==='catchup')renderCatchup();if(t==='katalog')renderKatalog();if(t==='khusus'&&!$('#is_p'))renderKhusus();if(t==='kipi'&&!$('#kp_e'))renderKipi();if(t==='update')renderUpdate()}
+function setTab(t){S.tab=t;document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+t));
+ if(t==='kipi')renderKipi();if(t==='khusus')renderKhusus();render();try{if(location.hash!=='#'+t)history.replaceState(null,'','#'+t)}catch(e){}}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)setTab(b.dataset.tab)});
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,d=el.dataset;
+ if(el.tagName==='A')e.preventDefault();
+ switch(a){
+ case 'close':closeModal();break;
+ case 'newp':patientForm();break;
+ case 'editp':{const p=getP(d.pid);if(p&&p.demo){toast('Contoh: simpan sebagai pasien baru');}patientForm(p);break}
+ case 'selp':S.sel=d.pid;renderPasien();break;
+ case 'give':doseForm(d.pid,d.vid||'flu',{plan:d.plan,item:d.item,skema:d.skema});break;
+ case 'sub':subModal(d.vid);break;
+ case 'hidedemo':S.hideDemo=true;lsSave();render();break;
+ case 'delp':{const p=getP(d.pid);if(guardDemo(p))break;openModal(`<header><h2>Hapus ${esc(p.nama)}?</h2></header><p>Seluruh riwayat vaksin pasien ini ikut terhapus.</p><div class="row"><button class="btn primary" data-act="delpok" data-pid="${p.id}">Hapus</button><button class="btn" data-act="close">Batal</button></div>`);break}
+ case 'delpok':closeModal();deletePatient(d.pid);toast('Pasien dihapus');break;
+ case 'deld':{const p=getP(d.pid);if(guardDemo(p))break;const np=JSON.parse(JSON.stringify(p));np.history=np.history.filter(h=>h.id!==d.hid);savePatient(np);break}
+ case 'delplan':{const p=getP(d.pid);if(guardDemo(p))break;const np=JSON.parse(JSON.stringify(p));np.plans=(np.plans||[]).filter(x=>x.id!==d.plan);savePatient(np);break}
+ case 'wa':{const p=getP(d.pid);const txt=waText(p,d.vid,d.due,d.label);const n=waNum(p.hp);openModal(`<header><h2>Pesan pengingat</h2><button class="btn ghost" data-act="close">Tutup</button></header><textarea id="tm" style="min-height:180px">${esc(txt)}</textarea><div class="row"><button class="btn primary" data-act="copytm">Salin</button>${n?`<a class="btn" href="https://wa.me/${n}?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener">Buka WhatsApp</a><span class="tiny muted">${esc(p.hp)}</span>`:'<span class="tiny muted">No. HP belum diisi</span>'}</div>`);break}
+ case 'copytm':{const t=$('#tm');try{navigator.clipboard.writeText(t.value).then(()=>toast('Disalin'),()=>{t.select();toast('Tekan salin pada keyboard')})}catch(err){t.select()}break}
+ case 'icsall':{const list=[];patients().forEach(p=>allItems(p).forEach(it=>{if(it.status!=='ki')list.push([it,p])}));saveFile('pengingat-vaksin.ics',icsFor(list),'text/calendar');break}
+ case 'icsp':{const p=getP(d.pid);saveFile('vaksin-'+(p.nama||'pasien').replace(/\W+/g,'-')+'.ics',icsFor(allItems(p).filter(i=>i.status!=='ki').map(i=>[i,p])),'text/calendar');break}
+ case 'export':exportJson();break;
+ case 'tocatch':S.cuP=d.pid;setTab('catchup');break;
+ case 'toks':{const p=getP(d.pid);S.isP=d.pid;S.isx=p&&p.isx?JSON.parse(JSON.stringify(p.isx)):null;setTab('khusus');break}
+ case 'saveplan':savePlan();break;
+ case 'copyplan':textModal('Ringkasan rencana',planSummary(S._plan));break;
+ case 'kk':S.kk=d.k;renderKatalog();break;
+ case 'prodtog':{const f=S.form[d.vid]=S.form[d.vid]||{};f.hide=f.hide||[];f.hide=f.hide.includes(d.x)?f.hide.filter(y=>y!==d.x):[...f.hide,d.x];S.kOpen=d.vid;saveCustom();break}
+ case 'proddel':{const f=S.form[d.vid]||{};f.add=(f.add||[]).filter(y=>y!==d.x);S.kOpen=d.vid;saveCustom();break}
+ case 'prodadd':{const i=$('#pa_'+d.vid);const val=(i&&i.value||'').trim();if(!val){toast('Isi nama produk dulu');break}const f=S.form[d.vid]=S.form[d.vid]||{};f.add=[...(f.add||[]),val];S.kOpen=d.vid;saveCustom();toast('Produk ditambahkan');break}
+ case 'kipicopy':textModal('Draf laporan KIPI',kipiText(),'Lengkapi lalu input ke keamananvaksin.kemkes.go.id / formulir KIPI.');break;
+ case 'kipisave':kipiSave();break;
+ case 'spsave':spSave();break;
+ case 'issave':isSave();break;
+ case 'delu':S.custom=S.custom.filter(x=>x.id!==d.id);saveCustom();break;
+ }});
+
+/* ============ Boot ============ */
+lsLoad();
+const h0=(location.hash||'').slice(1);setTab(['pengingat','pasien','catchup','khusus','katalog','kipi','update'].includes(h0)?h0:'pengingat');
+window.addEventListener('hashchange',()=>{const h=(location.hash||'').slice(1);if(h&&h!==S.tab&&document.querySelector(`[data-tab="${h}"]`))setTab(h)});
+initDb();
+</script>
+</body>
+</html>
